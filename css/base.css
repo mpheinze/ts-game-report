@@ -1,0 +1,52 @@
+/* VOICE: an end-of-game dossier, calm and exact.
+   IDEA: the face-off of the board game: US blue on the left, USSR red on the right, the VP track between them.
+   PICTURE: the scoreboard with the VP track, then mirrored bars for each side.
+   COLOUR and TYPE: white sheet, US #3f6fc0, USSR #c4463d, ink #1d2433; Source Serif 4 display, Inter text.
+   LAYOUT: one centred sheet up to 1100px; upload panel when empty; report sections stacked below. */
+:root{color-scheme:light dark;
+  --page:light-dark(#eef0f4,#12151b);
+  --font-anthropic-sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-anthropic-serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --cds-font-size-caption:12.5px;--cds-font-size-body:15px;--cds-font-size-heading:18px;--cds-font-size-title:26px;
+  --cds-font-weight-medium:600;
+  --cds-gap-xs:4px;--cds-gap-sm:8px;--cds-gap-md:14px;--cds-gap-lg:22px;--cds-gap-xl:34px;
+  --cds-pad-xs:4px;--cds-pad-sm:8px;--cds-pad-md:14px;--cds-pad-lg:24px;
+  --cds-radius:10px;--cds-dur-slow:.45s;--cds-ease-out:cubic-bezier(.2,.8,.2,1)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--page);font:15px/1.5 var(--font-anthropic-sans);overflow-x:clip}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(10px,3vw,32px) max(3vw,10px) 24px}
+.foot{max-width:1100px;margin:0 auto;padding:0 max(3vw,10px) 28px;font-size:12px;color:light-dark(#6b7385,#8f97a8);text-align:center}
+.foot a{color:inherit}
+[hidden]{display:none!important}
+
+/* --- website additions --- */
+.tsr{border-radius:16px;box-shadow:0 10px 40px rgba(20,30,50,.10)}
+.tsr-controls{justify-content:center}
+.tsr-btn{min-height:40px}
+.tsr-btn.ghost{color:var(--muted);border-color:var(--line)}
+.tsr-btn.ghost:hover{background:#f6f7f9}
+.tsr-btn.danger{color:var(--ussr);border-color:var(--ussr-soft)}
+.tsr-top .dash-select{appearance:none;-webkit-appearance:none;font:inherit;font-size:14px;min-height:40px;padding:.45em 2.2em .45em .8em;border-radius:var(--cds-radius);
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236b7385' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right .8em center}
+.tsr-btn:focus-visible,.dash-select:focus-visible,.drop:focus-visible{outline:2px solid var(--us);outline-offset:2px}
+.drop{margin:var(--cds-gap-lg) auto 0;max-width:620px;border:2px dashed var(--us-soft);border-radius:14px;padding:clamp(22px,5vw,44px) 20px;text-align:center;
+  background:linear-gradient(90deg,var(--us-tint),#fff 50%,var(--ussr-tint));cursor:pointer;transition:border-color .2s,background .2s}
+.drop.over{border-color:var(--us)}
+.drop h2{margin:0 0 .3em;font:400 clamp(20px,3vw,26px)/1.2 var(--font-anthropic-serif);color:var(--fg)}
+.drop p{margin:.2em 0;color:var(--muted);font-size:14px}
+.drop .tsr-btn{margin-top:14px;font-size:15px;padding:.6em 1.2em;color:#fff;background:var(--us);border-color:var(--us)}
+.drop .tsr-btn:hover{background:#355fa8}
+.privacy{font-size:12.5px!important;margin-top:12px!important}
+.tsr-addmsg{min-height:0}
+body.dragging .tsr{outline:3px dashed var(--us-soft);outline-offset:6px}
+.drop{margin-bottom:var(--cds-gap-md)}
+@media (max-width:640px){.tsr{border-radius:12px}
+.tsr-h{font-size:17px;letter-spacing:.08em;column-gap:.4em}
+.tsr-oprow{flex-wrap:wrap}.us .tsr-oprow{flex-direction:column;align-items:flex-end}.ussr .tsr-oprow{flex-direction:column;align-items:flex-start}
+.tsr-oprow .tsr-bar{width:100%;flex:none}
+.tsr-nums{gap:.2em .6em}.tsr-key .tsr-nums b,.tsr-key .tsr-avg b,.tsr-key .tsr-val,.tsr-key .tsr-sc b{font-size:22px}
+.tsr-mid.key{font-size:12.5px;letter-spacing:.03em}
+.tsr-key .tsr-sc{justify-content:center}
+#ops .tsr-cell[data-draw="ops"] + .tsr-mid{align-self:center}#ops .tsr-cell[data-draw="ops"] + .tsr-mid::before{content:none}}
+@media (max-width:640px){.tsr-top .dash-select{min-width:0;width:100%}.tsr-controls{width:100%}}
