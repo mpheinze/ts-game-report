@@ -15,12 +15,12 @@ Everything runs in your browser. Your logs are read on your device and kept only
 
 The Twilight Struggle game doesn't save game logs by itself. They are written by **TSArmsRace**, a fan-made mod pack for the Steam version of Twilight Struggle (Windows and macOS). Its Game Log Writer saves one log file per game.
 
-1. Download the latest `TSArmsRace-windows.zip` or `TSArmsRace-macos.zip` from the [TSArmsRace releases page](https://github.com/ctozlowski/TSArmsRace/releases/latest).
+1. Get TSArmsRace (`TSArmsRace-windows.zip` or `TSArmsRace-macos.zip`) from the [TSArmsRace project on GitHub](https://github.com/ctozlowski/TSArmsRace).
 2. In Steam, right-click **Twilight Struggle** → **Manage** → **Browse Local Files**, and extract the zip into that folder. On macOS you also need to set a Steam launch option.
 3. Launch the game. The first start can take a minute or two, and you may need to launch it twice before the mods are active.
 4. Check that `TSGameLog=true` is set in `BepInEx/plugins/mods.cfg` (it is on in a fresh install).
 
-Logs are then saved to **Desktop/Twilight Struggle/**, one file per game, named by game ID (for example `3415310.txt`). The full install and troubleshooting steps are in the [TSArmsRace README](https://github.com/ctozlowski/TSArmsRace#readme).
+Logs are then saved to **Desktop/Twilight Struggle/**, one file per game, named by game ID (for example `3415310.txt`). The full install and troubleshooting steps are in the [TSArmsRace project page](https://github.com/ctozlowski/TSArmsRace).
 
 TSArmsRace is a third-party project by ctozlowski. It isn't made by this site, Playdek or GMT Games.
 
