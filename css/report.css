@@ -110,7 +110,7 @@
 .tsr-sc { display:flex; align-items:center; gap:.5em; flex-wrap:wrap; }
 .tsr-cell.us .tsr-sc { flex-direction: row-reverse; }
 .tsr-pips { display:flex; gap:3px; flex-wrap:wrap; }
-.tsr-pip { width:10px; height:14px; border-radius:2px; }
+.tsr-pip { width:12px; height:16px; border-radius:2px; }
 .us .tsr-pip { background: var(--us); } .ussr .tsr-pip { background: var(--ussr); }
 .tsr-key .tsr-pip { width:14px; height:20px; }
 .tsr-sc b { color: var(--fg); font-weight: var(--cds-font-weight-medium); }
@@ -183,3 +183,11 @@
   font: 400 13px/1.45 var(--font-anthropic-sans); letter-spacing:0; text-transform:none; text-align:left; }
 .tsr-pop b { font-weight:600; }
 .tsr-pop p { margin:0; } .tsr-pop p + p { margin-top:.45em; }
+
+/* scoring card pips: coloured by card, in the order they were played */
+.tsr-pip { background: #9aa2b1; box-shadow: inset 0 0 0 1px rgba(29,36,51,.14); cursor: default; }
+.us .tsr-pip, .ussr .tsr-pip { background-color: #c3c8d2; }
+.tsr-pip.scored { cursor: help; }
+.tsr-pip:hover, .tsr-pip:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
+.tsr-pip:focus { outline-offset: 1px; }
+.tsr-pop.small { max-width: 18rem; white-space: nowrap; font-weight: 500; }

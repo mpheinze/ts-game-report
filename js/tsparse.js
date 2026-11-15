@@ -209,9 +209,10 @@
       last = info;
     }
 
+    const scorSeq = { US: [], USSR: [] };
     for (const p of plays) {
       const c = CARDS[p.card], side = p.side, era = ERA(p.turn);
-      if (c.scoring) { ops[side][era].scorings += 1; continue; }
+      if (c.scoring) { ops[side][era].scorings += 1; scorSeq[side].push([p.card, p.turn]); continue; }
       let o = c.ops;
       if (p.mod) o = Math.min(4, Math.max(1, o + p.mod));
       if (o >= 4) ops[side][era].four += 1;
@@ -298,7 +299,7 @@
       const sets = { coup_all: coups, coup_bg: g('coup_bg'), coup_nonbg: g('coup_nonbg'), realign: g('realign'), war: g('war'), space: g('space'), all: coups.concat(g('realign'), g('war'), g('space')) };
       dstats[s] = {}; for (const [k, v] of Object.entries(sets)) dstats[s][k] = { avg: avg(v), n: v.length };
     }
-    return { id: gid, players, clock, turn: last.turn, final_vp: finalVp, ending, ending_name: ENDING_NAME[ending], winner, note, wars, bgflip, dice: dstats, ops };
+    return { id: gid, players, clock, turn: last.turn, final_vp: finalVp, ending, ending_name: ENDING_NAME[ending], winner, note, wars, bgflip, dice: dstats, ops, scorSeq };
   }
 
   // make_rows.py
@@ -310,6 +311,7 @@
     for (const s of ['US', 'USSR']) {
       const p = s.toLowerCase();
       for (const [k, v] of Object.entries(g.dice[s])) { r[`${p}_${k}_avg`] = v.avg; r[`${p}_${k}_n`] = v.n; }
+      r[`${p}_scoring_seq`] = g.scorSeq[s];
       r[`${p}_bg_flips`] = g.bgflip[s]; r[`${p}_wars_won`] = g.wars[s].won; r[`${p}_wars_fought`] = g.wars[s].fought;
       const tot = { playable: 0, costly: 0, scorings: 0, total: 0, cards: 0, four: 0 };
       for (const era of ['Early', 'Mid', 'Late']) for (const k of Object.keys(tot)) { r[`${p}_${era.toLowerCase()}_${k}`] = g.ops[s][era][k]; tot[k] += g.ops[s][era][k]; }

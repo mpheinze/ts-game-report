@@ -164,16 +164,45 @@ dash.draw('wars', (el) => {
   tsr.tip(el, `${r[s + '_player']}: ${W} war${W === 1 ? '' : 's'} won`);
 });
 
+// Scoring card colours (two-tone cards are split top/bottom)
+tsr.scorColor = {
+  1: ['#F3A638'],             // Asia Scoring
+  2: ['#A499C3', '#BFB7D6'],  // Europe Scoring
+  3: ['#C4E4F5'],             // Middle East Scoring
+  37: ['#C8D896'],            // Central America Scoring
+  38: ['#F3A638', '#FFD200'], // Southeast Asia Scoring
+  79: ['#F7E396'],            // Africa Scoring
+  81: ['#9AC284']             // South America Scoring
+};
+tsr.eraOf = (turn) => (turn <= 3 ? 'early' : turn <= 7 ? 'mid' : 'late');
+
 dash.draw('scor', (el) => {
   const r = tsr.row(); const s = el.dataset.side, era = el.dataset.era;
   if (!r) { el.replaceChildren(tsr.span('tsr-n', '—')); return; }
   const S = r[`${s}_${era}_scorings`];
+  const seq = Array.isArray(r[`${s}_scoring_seq`]) ? r[`${s}_scoring_seq`].filter(([, turn]) => era === 'game' || tsr.eraOf(turn) === era) : null;
   const box = document.createElement('div'); box.className = 'tsr-sc';
-  const pips = document.createElement('div'); pips.className = 'tsr-pips'; pips.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < S; i++) { const p = document.createElement('span'); p.className = 'tsr-pip'; pips.append(p); }
+  const pips = document.createElement('div'); pips.className = 'tsr-pips';
+  const cards = (window.TS_REFERENCE && window.TS_REFERENCE.cards) || {};
+  for (let i = 0; i < S; i++) {
+    const p = document.createElement('span'); p.className = 'tsr-pip';
+    p.tabIndex = 0;
+    if (seq && seq[i]) {
+      const [no, turn] = seq[i];
+      const name = cards[no] ? cards[no][0] : 'Scoring card';
+      const col = tsr.scorColor[no] || ['#9aa2b1'];
+      p.classList.add('scored');
+      p.style.background = col.length > 1 ? `linear-gradient(${col[0]} 0 50%, ${col[1]} 50% 100%)` : col[0];
+      p.dataset.tip = `${name} · Turn ${turn}`;
+      p.setAttribute('aria-label', `${name}, turn ${turn}`);
+    } else {
+      p.dataset.tip = 'Add this game\'s log again to see which scoring card this was';
+      p.setAttribute('aria-label', 'Scoring card');
+    }
+    pips.append(p);
+  }
   box.append(tsr.span('', String(S), 0, 0, 'b'), pips);
   el.replaceChildren(box);
-  tsr.tip(el, `${r[s + '_player']}: ${S} scoring card${S === 1 ? '' : 's'}`);
 });
 
 // ---------- "?" help: what each measure means ----------
@@ -194,16 +223,18 @@ dash.draw('scor', (el) => {
     ops: ['<b>Total</b> is the Ops value of every non-scoring card this player played: for Ops, as an event or on the Space Race. Values include Red Scare/Purge, Containment and Brezhnev Doctrine. The China Card counts 5 when all its Ops went into Asia.',
       '<b>Costly</b> Ops come from opponent cards whose event fired, or that were sent to the Space Race to avoid the event. They are the light part of the bar.',
       '<b>/card</b> is the average Ops per card. Early War is turns 1–3, Mid War 4–7, Late War 8–10.'],
-    scor: ['<b>Scoring cards</b> this player played, for the whole game and per era.']
+    scor: ['<b>Scoring cards</b> this player played, for the whole game and per era, in the order they were played.',
+      'Each card has its own colour. Hover over or tap a card to see which region it scored and in which turn.']
   };
   const pop = document.createElement('div'); pop.className = 'tsr-pop'; pop.id = 'tsr-pop'; pop.setAttribute('role', 'tooltip'); pop.hidden = true;
   (document.getElementById('report') || document.body).appendChild(pop);
   let cur = null, pinned = false;
   function show(btn) {
-    const k = btn.dataset.help; if (!HELP[k]) return;
+    const k = btn.dataset.help; const lines = btn.dataset.tip ? [btn.dataset.tip] : HELP[k]; if (!lines) return;
     if (cur && cur !== btn) cur.setAttribute('aria-expanded', 'false');
     cur = btn; btn.setAttribute('aria-expanded', 'true'); btn.setAttribute('aria-describedby', 'tsr-pop');
-    pop.innerHTML = HELP[k].map((s) => `<p>${s}</p>`).join('');
+    pop.replaceChildren(...lines.map((s) => { const q = document.createElement('p'); if (btn.dataset.tip) q.textContent = s; else q.innerHTML = s; return q; }));
+    pop.classList.toggle('small', !!btn.dataset.tip);
     pop.hidden = false;
     const r = btn.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight, m = 8;
     let x = r.left + r.width / 2 - pw / 2; x = Math.max(m, Math.min(x, window.innerWidth - pw - m));
@@ -219,7 +250,16 @@ dash.draw('scor', (el) => {
     b.addEventListener('blur', () => hide());
     b.addEventListener('click', (e) => { e.stopPropagation(); if (pinned && cur === b) { hide(); } else { show(b); pinned = true; } });
   });
-  document.addEventListener('click', () => { if (pinned) hide(); });
+  // scoring card pips are redrawn, so listen on the document
+  document.addEventListener('mouseover', (e) => { const p = e.target.closest && e.target.closest('.tsr-pip[data-tip]'); if (p && !pinned && cur !== p) show(p); });
+  document.addEventListener('mouseout', (e) => { const p = e.target.closest && e.target.closest('.tsr-pip[data-tip]'); if (p && !pinned && cur === p && !p.contains(e.relatedTarget)) hide(); });
+  document.addEventListener('focusin', (e) => { if (e.target.matches && e.target.matches('.tsr-pip[data-tip]')) show(e.target); });
+  document.addEventListener('focusout', (e) => { if (e.target.matches && e.target.matches('.tsr-pip[data-tip]') && !pinned) hide(); });
+  document.addEventListener('click', (e) => {
+    const p = e.target.closest && e.target.closest('.tsr-pip[data-tip]');
+    if (p) { e.stopPropagation(); if (pinned && cur === p) hide(); else { show(p); pinned = true; } return; }
+    if (pinned) hide();
+  });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
   window.addEventListener('scroll', () => { if (cur) hide(); }, { passive: true });
   window.addEventListener('resize', () => { if (cur) hide(); });
