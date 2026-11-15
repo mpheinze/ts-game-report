@@ -50,9 +50,9 @@
       else if (spIdx > evIdx || (spIdx >= 0 && ctx.mode === 'space' && spIdx >= evIdx)) src = (ctx.mode === 'space' && evIdx < 0 ? 'Space Race' : `${ev || 'Space Race'} (Space Race)`) + `, box ${sp}`;
       else if (ev) src = ev;
       // VP printed on the action-round header before the card resolves come from an ongoing effect
-      else if (i === 0 && ctx.kind === 'ar' && ctx.hasHead && ctx.side === 'US' && d === -2) src = 'Flower Power (US played a war card)';
-      else if (i === 0 && ctx.kind === 'ar' && ctx.hasHead && ctx.side === 'US' && d === -3) src = 'We Will Bury You (US did not play UN Intervention)';
-      else if (ctx.kind === 'cleanup') src = `Military Ops shortfall (${d > 0 ? 'USSR' : 'US'} below DEFCON requirement)`;
+      else if (i === 0 && ctx.kind === 'ar' && ctx.hasHead && ctx.side === 'US' && d === -2) src = 'Flower Power';
+      else if (i === 0 && ctx.kind === 'ar' && ctx.hasHead && ctx.side === 'US' && d === -3) src = 'We Will Bury You';
+      else if (ctx.kind === 'cleanup') src = 'Military Ops';
       else if (ctx.kind === 'headline') src = `Headline: ${ctx.headlines}`;
       else if (ctx.card) src = ctx.card.replace(/\*$/, '');
       else src = 'Not stated in the log';
@@ -73,6 +73,12 @@
       if (/^Event: /.test(l)) return 'Event';
     }
     return null;
+  }
+  // Short source for a game-ending score the log never prints: the card (or Final Scoring / Space Race), not the explanation
+  function endSource(note, ending) {
+    if (ending === 'V7') return 'Final Scoring';
+    const m = /^(.+?)(?::| result not logged| headline result| roll not logged| not logged)/.exec(note || '');
+    return m ? m[1].replace(/\*$/, '') : (note || 'Game end');
   }
   class Board {
     constructor() { this.inf = {}; for (const [c, v] of Object.entries(COUNTRY)) this.inf[c] = [v.us0, v.ussr0]; }
@@ -349,7 +355,7 @@
     // Final Scoring lines are printed after the last action round, set apart by a blank line
     if (ending === 'V7' && timeline.length) for (const s of timeline[timeline.length - 1][5]) if (s[2]) s[1] = 'Final Scoring';
     for (const e of timeline) for (const s of e[5]) s.length = 2;
-    if (finalVp !== vp) timeline.push([gameTurn, 'E', null, null, finalVp, [[finalVp - vp, note || ENDING_NAME[ending] || 'Game end']]]);
+    if (finalVp !== vp) timeline.push([gameTurn, 'E', null, null, finalVp, [[finalVp - vp, endSource(note, ending)]]]);
     return { id: gid, players, clock, turn: last.turn, final_vp: finalVp, ending, ending_name: ENDING_NAME[ending], winner, note, wars, bgflip, dice: dstats, ops, scorSeq, timeline };
   }
 
