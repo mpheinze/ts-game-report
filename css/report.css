@@ -151,9 +151,22 @@
   .tsr-tip { white-space: normal; width: 14rem; }
 }
 
-/* Coup rolls: same-width number and count columns on every row, so all bars have equal length and the 3.5 marks line up */
-.tsr-cell[data-draw="dice"] .tsr-val { flex: 0 0 4rem; width: 4rem; min-width: 0; }
-.tsr-cell[data-draw="dice"] > .tsr-n { flex: 0 0 2.6rem; width: 2.6rem; }
-.tsr-cell.us[data-draw="dice"] > .tsr-n { text-align: left; }
-.tsr-cell.ussr[data-draw="dice"] > .tsr-n { text-align: right; }
+/* Coup rolls: a fixed three-column grid (count | bar | average), so every bar has the same length
+   whatever the numbers say, and the fair 3.5 marker sits on the same spot in every row */
+.tsr-cell[data-draw="dice"] { display: grid; align-items: center; column-gap: .6em; }
+.tsr-cell.us[data-draw="dice"] { grid-template-columns: 2.6rem minmax(0, 1fr) 4rem; }
+.tsr-cell.ussr[data-draw="dice"] { grid-template-columns: 4rem minmax(0, 1fr) 2.6rem; }
+.tsr-cell[data-draw="dice"] > .tsr-bar { grid-column: 2; grid-row: 1; width: 100%; min-width: 0; }
+.tsr-cell.us[data-draw="dice"] > .tsr-val { grid-column: 3; grid-row: 1; }
+.tsr-cell.us[data-draw="dice"] > .tsr-cnt { grid-column: 1; grid-row: 1; text-align: left; }
+.tsr-cell.ussr[data-draw="dice"] > .tsr-val { grid-column: 1; grid-row: 1; }
+.tsr-cell.ussr[data-draw="dice"] > .tsr-cnt { grid-column: 3; grid-row: 1; text-align: right; }
+.tsr-cell[data-draw="dice"] > .tsr-val { min-width: 0; text-align: center; }
+.tsr-val.empty { color: var(--muted); }
 .us .tsr-ref { transform: translateX(50%); } .ussr .tsr-ref { transform: translateX(-50%); }
+@media (max-width: 640px) {
+  .tsr-cell.us[data-draw="dice"], .tsr-cell.ussr[data-draw="dice"] { grid-template-columns: minmax(0, 1fr); row-gap: .2em; }
+  .tsr-cell[data-draw="dice"] > .tsr-val { grid-column: 1 !important; grid-row: 1 !important; }
+  .tsr-cell[data-draw="dice"] > .tsr-bar { grid-column: 1; grid-row: 2; }
+  .tsr-cell[data-draw="dice"] > .tsr-cnt { grid-column: 1 !important; grid-row: 3 !important; text-align: center !important; }
+}

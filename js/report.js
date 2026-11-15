@@ -96,8 +96,8 @@ dash.draw('dice', (el) => {
   const fill = document.createElement('div'); fill.className = 'tsr-fill'; fill.style.width = avg == null ? '0%' : (avg / 6 * 100) + '%';
   const ref = document.createElement('div'); ref.className = 'tsr-ref'; ref.style[s === 'us' ? 'right' : 'left'] = `${3.5 / 6 * 100}%`;
   bar.append(fill, ref);
-  const val = avg == null ? tsr.span('tsr-val tsr-n', '—') : tsr.span('tsr-val', avg.toFixed(2));
-  const cnt = tsr.span('tsr-n', `(${n})`);
+  const val = avg == null ? tsr.span('tsr-val empty', '—') : tsr.span('tsr-val', avg.toFixed(2));
+  const cnt = tsr.span('tsr-n tsr-cnt', `(${n})`);
   el.replaceChildren(val, bar, cnt);
   tsr.tip(el, avg == null ? `${r[s + '_player']}: no rolls` : `${r[s + '_player']}: ${avg.toFixed(2)} over ${n} roll${n === 1 ? '' : 's'} (fair 3.50)`);
 });

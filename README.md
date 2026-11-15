@@ -43,6 +43,8 @@ js/report.js        draws each part of the report
 js/upload.js        file picker, drag and drop, clear button
 ```
 
+When you change a CSS or JS file, bump the `?v=` number on its link in `index.html` so browsers fetch the new version instead of a cached copy.
+
 There is no build step and no server code. GitHub Pages serves the `main` branch as it is. To run it locally, open `index.html` in a browser.
 
 ---
