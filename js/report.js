@@ -298,7 +298,7 @@ dash.draw('timeline', (el) => {
 
   // y axis
   const ax = mk('g', { class: 'axis' }, svg);
-  const step = dom <= 5 ? 1 : 5;
+  const step = 10; // ticks at Even, 10 and 20 each way
   for (let v = -dom; v <= dom; v += step) {
     if (step === 1 && v % 1) continue;
     const yy = y(v);
