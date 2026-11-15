@@ -150,3 +150,10 @@
   .tsr-cell { flex-wrap: wrap; } .tsr-cell .tsr-bar { flex-basis: 100%; }
   .tsr-tip { white-space: normal; width: 14rem; }
 }
+
+/* Coup rolls: same-width number and count columns on every row, so all bars have equal length and the 3.5 marks line up */
+.tsr-cell[data-draw="dice"] .tsr-val { flex: 0 0 4rem; width: 4rem; min-width: 0; }
+.tsr-cell[data-draw="dice"] > .tsr-n { flex: 0 0 2.6rem; width: 2.6rem; }
+.tsr-cell.us[data-draw="dice"] > .tsr-n { text-align: left; }
+.tsr-cell.ussr[data-draw="dice"] > .tsr-n { text-align: right; }
+.us .tsr-ref { transform: translateX(50%); } .ussr .tsr-ref { transform: translateX(-50%); }
