@@ -277,7 +277,7 @@ dash.draw('timeline', (el) => {
   const NS = 'http://www.w3.org/2000/svg';
   const mk = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.append(n); return n; };
   const W = Math.max(320, el.clientWidth || 800), narrow = W < 560;
-  const H = narrow ? 220 : 260, L = narrow ? 52 : 64, R = 14, T = 14, B = 28;
+  const H = narrow ? 190 : 210, L = narrow ? 52 : 64, R = 14, T = 10, B = 24;
   const iw = W - L - R, ih = H - T - B;
   const dom = 20; // fixed: Even in the middle, 20 VP each way
   const n = pts.length;

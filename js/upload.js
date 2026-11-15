@@ -8,7 +8,7 @@ const input = document.getElementById('add-file');
 async function addFiles(list) {
   list = [...list].filter((f) => /\.txt$/i.test(f.name) || f.type === 'text/plain');
   if (!list.length) { say('Pick the game log .txt files.', true); return; }
-  say(`Reading ${list.length} file${list.length === 1 ? '' : 's'}…`);
+  say('');
   try {
     const files = await Promise.all(list.map(async (f) => ({ name: f.name, text: await f.text() })));
     const { rows, skipped } = window.TSParse.parseLogs(files, '');
@@ -21,7 +21,9 @@ async function addFiles(list) {
     S.game = rows.map((r) => String(r.id)).sort().pop();
     const kept = save();
     render();
-    say(`${added} game${added === 1 ? '' : 's'} added${updated ? `, ${updated} updated` : ''}.` + skipNote + (kept ? '' : ' Your browser would not store them, so they will be gone when you close this page.'), !kept);
+    // only problems are reported; a successful add just shows the newest game
+    const problem = skipNote.trim() + (kept ? '' : ' Your browser would not store these games, so they will be gone when you close this page.');
+    say(problem.trim(), !!problem.trim());
   } catch (e) { say('Could not read the files: ' + (e && e.message ? e.message : String(e)), true); }
 }
 document.querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); input.click(); }));
@@ -36,7 +38,7 @@ window.addEventListener('dragover', (e) => e.preventDefault());
 window.addEventListener('drop', (e) => { e.preventDefault(); depth = 0; document.body.classList.remove('dragging'); drop.classList.remove('over'); if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files); });
 const clear = document.getElementById('clear-btn');
 clear.addEventListener('click', () => {
-  S.rows = []; S.game = null; save(); render(); say('All games removed from this browser.');
+  S.rows = []; S.game = null; save(); render(); say('');
 });
 let rt = null;
 window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { dash.draw('track'); dash.draw('timeline'); }, 120); });
