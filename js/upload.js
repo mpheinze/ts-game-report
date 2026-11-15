@@ -26,7 +26,7 @@ async function addFiles(list) {
 }
 document.querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); input.click(); }));
 const drop = document.getElementById('drop');
-drop.addEventListener('click', () => input.click());
+drop.addEventListener('click', (e) => { if (e.target.closest('a')) return; input.click(); });
 drop.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
 input.addEventListener('change', () => { addFiles(input.files || []); input.value = ''; });
 let depth = 0;

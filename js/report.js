@@ -175,3 +175,52 @@ dash.draw('scor', (el) => {
   el.replaceChildren(box);
   tsr.tip(el, `${r[s + '_player']}: ${S} scoring card${S === 1 ? '' : 's'}`);
 });
+
+// ---------- "?" help: what each measure means ----------
+(function () {
+  const HELP = {
+    vp: ['<b>Final VP</b> is the score when the game ended. The track runs from US 20 on the left to USSR 20 on the right.',
+      'The log never says how a game ended, so it is worked out by replaying the game: 20 VP, DEFCON 1, Final Scoring, Wargames, Europe Control, Cuban Missile Crisis, a scoring card held at the end of a turn, or a forfeit or timeout.'],
+    wars: ['<b>Wars won</b> counts war events this player won.',
+      'Korean War and Arab-Israeli War always count for the USSR, even when the US triggers them. Neutral wars (Indo-Pakistani War, Brush War, Iran-Iraq War) count for the player who played the card.'],
+    four: ['<b>4 Ops cards</b> counts cards this player played at 4 Ops or more, after modifiers: Red Scare/Purge −1, Containment +1 (US), Brezhnev Doctrine +1 (USSR).',
+      'Scoring cards are not counted.'],
+    coups: ['The average <b>raw die roll</b> on this player\'s coups, before Ops and modifiers are added. Coups made through events count too.',
+      'The thin line marks 3.5, the average of a fair die. The number in brackets is how many coup rolls there were.'],
+    bg: ['<b>Battleground</b> coups target battleground countries, the countries that decide Domination and Control in region scoring and are worth 1 VP each when controlled. Taiwan counts once Formosan Resolution is in play and the US controls Taiwan.',
+      '<b>Non-battleground</b> coups target every other country.'],
+    flips: ['A <b>battleground flip</b> is a coup in a battleground country that the opponent controlled before the coup and this player controlled after it.',
+      '"of 6" means 6 battleground coups in total.'],
+    ops: ['<b>Total</b> is the Ops value of every non-scoring card this player played: for Ops, as an event or on the Space Race. Values include Red Scare/Purge, Containment and Brezhnev Doctrine. The China Card counts 5 when all its Ops went into Asia.',
+      '<b>Costly</b> Ops come from opponent cards whose event fired, or that were sent to the Space Race to avoid the event. They are the light part of the bar.',
+      '<b>/card</b> is the average Ops per card. Early War is turns 1–3, Mid War 4–7, Late War 8–10.'],
+    scor: ['<b>Scoring cards</b> this player played, for the whole game and per era.']
+  };
+  const pop = document.createElement('div'); pop.className = 'tsr-pop'; pop.id = 'tsr-pop'; pop.setAttribute('role', 'tooltip'); pop.hidden = true;
+  document.body.appendChild(pop);
+  let cur = null, pinned = false;
+  function show(btn) {
+    const k = btn.dataset.help; if (!HELP[k]) return;
+    if (cur && cur !== btn) cur.setAttribute('aria-expanded', 'false');
+    cur = btn; btn.setAttribute('aria-expanded', 'true'); btn.setAttribute('aria-describedby', 'tsr-pop');
+    pop.innerHTML = HELP[k].map((s) => `<p>${s}</p>`).join('');
+    pop.hidden = false;
+    const r = btn.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight, m = 8;
+    let x = r.left + r.width / 2 - pw / 2; x = Math.max(m, Math.min(x, window.innerWidth - pw - m));
+    let y = r.bottom + 8; if (y + ph > window.innerHeight - m) y = Math.max(m, r.top - ph - 8);
+    pop.style.left = x + 'px'; pop.style.top = y + 'px';
+  }
+  function hide() { if (cur) { cur.setAttribute('aria-expanded', 'false'); cur.removeAttribute('aria-describedby'); } cur = null; pinned = false; pop.hidden = true; }
+  document.querySelectorAll('.tsr-help').forEach((b) => {
+    b.setAttribute('aria-expanded', 'false');
+    b.addEventListener('mouseenter', () => { if (!pinned) show(b); });
+    b.addEventListener('mouseleave', () => { if (!pinned) hide(); });
+    b.addEventListener('focus', () => show(b));
+    b.addEventListener('blur', () => hide());
+    b.addEventListener('click', (e) => { e.stopPropagation(); if (pinned && cur === b) { hide(); } else { show(b); pinned = true; } });
+  });
+  document.addEventListener('click', () => { if (pinned) hide(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
+  window.addEventListener('scroll', () => { if (cur) hide(); }, { passive: true });
+  window.addEventListener('resize', () => { if (cur) hide(); });
+})();

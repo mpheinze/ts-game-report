@@ -170,3 +170,16 @@
   .tsr-cell[data-draw="dice"] > .tsr-bar { grid-column: 1; grid-row: 2; }
   .tsr-cell[data-draw="dice"] > .tsr-cnt { grid-column: 1 !important; grid-row: 3 !important; text-align: center !important; }
 }
+
+/* "?" help buttons and their popover */
+.tsr-help { display:inline-flex; align-items:center; justify-content:center; width:1.35em; height:1.35em; margin-left:.25em; padding:0;
+  vertical-align: .1em; border-radius:50%; border:1px solid currentColor; background:transparent; color: var(--muted);
+  font: 600 10px/1 var(--font-anthropic-sans); letter-spacing:0; text-transform:none; cursor:help; opacity:.75; }
+.tsr-h .tsr-help { font-size: 11px; vertical-align: .3em; }
+.tsr-help:hover, .tsr-help:focus-visible, .tsr-help[aria-expanded="true"] { opacity:1; color: var(--us); }
+.tsr-help:focus-visible { outline:2px solid var(--us); outline-offset:2px; }
+.tsr-pop { position:fixed; z-index:50; max-width: min(20rem, calc(100vw - 16px)); padding:.6em .75em; border-radius: var(--cds-radius);
+  background:#fff; color: var(--fg); border:1px solid var(--line); box-shadow:0 8px 24px rgba(20,30,50,.16);
+  font: 400 13px/1.45 var(--font-anthropic-sans); letter-spacing:0; text-transform:none; text-align:left; }
+.tsr-pop b { font-weight:600; }
+.tsr-pop p { margin:0; } .tsr-pop p + p { margin-top:.45em; }

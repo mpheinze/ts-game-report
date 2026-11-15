@@ -38,6 +38,9 @@ body{margin:0;background:var(--page);font:15px/1.5 var(--font-anthropic-sans);ov
 .drop .tsr-btn{margin-top:14px;font-size:15px;padding:.6em 1.2em;color:#fff;background:var(--us);border-color:var(--us)}
 .drop .tsr-btn:hover{background:#355fa8}
 .privacy{font-size:12.5px!important;margin-top:12px!important}
+.drop .howto{margin:14px auto 0;max-width:30rem;font-size:13.5px;line-height:1.5}
+.drop .howto a{color:var(--us);font-weight:600}
+.drop .howto b{color:var(--fg);font-weight:600}
 .tsr-addmsg{min-height:0}
 body.dragging .tsr{outline:3px dashed var(--us-soft);outline-offset:6px}
 .drop{margin-bottom:var(--cds-gap-md)}
