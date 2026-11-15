@@ -8,18 +8,29 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/report.css?v=7">
-<link rel="stylesheet" href="css/base.css?v=7">
-<script defer src="js/reference.js?v=7"></script>
-<script defer src="js/tsparse.js?v=7"></script>
-<script defer src="js/engine.js?v=7"></script>
-<script defer src="js/report.js?v=7"></script>
-<script defer src="js/upload.js?v=7"></script>
+<link rel="stylesheet" href="css/report.css?v=8">
+<link rel="stylesheet" href="css/base.css?v=8">
+<script defer src="js/reference.js?v=8"></script>
+<script defer src="js/tsparse.js?v=8"></script>
+<script defer src="js/engine.js?v=8"></script>
+<script defer src="js/report.js?v=8"></script>
+<script defer src="js/upload.js?v=8"></script>
 </head>
 <body>
-<div class="wrap">
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href="./" aria-label="Twilight Struggle Game Report, home"><svg class="nav-emb i-us" viewBox="1 0.045 22 22" aria-hidden="true"><polygon points="12.000,2.000 14.245,8.910 21.511,8.910 15.633,13.180 17.878,20.090 12.000,15.820 6.122,20.090 8.367,13.180 2.489,8.910 9.755,8.910"/></svg><span class="brand-t"><span class="brand-main">Twilight Struggle</span><span class="brand-sub">Game Report</span></span><svg class="nav-emb i-ussr" viewBox="-0.25 0.9 22 22" aria-hidden="true"><path class="sickle" d="M5.5 16.5 A7.5 7.5 0 1 0 15 4.5"/><path class="sickle-h" d="M5.5 16.5 L3.5 19.5"/><path class="hammer" d="M8.5 8.5 L18 19"/><path class="hammer-h" d="M5.6 10.6 L10.6 5.6"/></svg></a>
+    <nav class="tsr-controls nav-ctl" data-when="games" hidden aria-label="Game controls">
+      <select class="dash-select" id="game-select" data-draw="gamepick" aria-label="Game"></select>
+      <button type="button" class="tsr-btn" data-pick>＋ Add games</button>
+      <button type="button" class="tsr-btn ghost danger" id="clear-btn">Clear my games</button>
+    </nav>
+  </div>
+</header>
+<input type="file" id="add-file" multiple accept=".txt,text/plain" hidden>
+<main class="wrap">
 <div class="tsr" id="report">
-  <div class="tsr-top">
+  <div class="tsr-top" data-when="empty">
     <div class="tsr-brand">
       <h1 class="tsr-title" id="title">
         <span class="tsr-title-row">
@@ -30,12 +41,6 @@
         <span class="tsr-title-sub">Game Report</span>
       </h1>
     </div>
-    <div class="tsr-controls" data-when="games" hidden>
-      <select class="dash-select" id="game-select" data-draw="gamepick" aria-label="Game"></select>
-      <button type="button" class="tsr-btn" data-pick>＋ Add games</button>
-      <button type="button" class="tsr-btn ghost danger" id="clear-btn">Clear my games</button>
-    </div>
-    <input type="file" id="add-file" multiple accept=".txt,text/plain" hidden>
   </div>
   <p class="tsr-addmsg" data-draw="addstatus" aria-live="polite"></p>
 
@@ -48,7 +53,7 @@
   <p class="howto" data-when="empty">No logs yet? The game doesn't save them by itself. Install the <a href="https://github.com/ctozlowski/TSArmsRace" target="_blank" rel="noopener">TSArmsRace mod</a> for the Steam version of Twilight Struggle (Windows or macOS), and each game you play is saved as a .txt file in <b>Desktop/Twilight Struggle</b>.</p>
 
   <div class="tsr-body" data-when="games" hidden>
-  <div class="tsr-board" id="scoreboard">
+  <div class="tsr-board card" id="scoreboard">
     <div class="tsr-side us" id="side-us">
       <div class="tsr-flag"><span class="ic">★</span>United States</div>
       <div class="tsr-name" data-draw="pname" data-side="us">—</div>
@@ -76,7 +81,7 @@
     </div>
   </div>
 
-  <section class="tsr-sec" id="dice">
+  <section class="tsr-sec card" id="dice">
     <h2 class="tsr-h"><span>Coup rolls (average) <button type="button" class="tsr-help" data-help="coups" aria-label="About coup rolls">?</button></span></h2>
     <div class="tsr-grid">
       <div class="tsr-colh us">US<span class="ic">★</span></div><div></div><div class="tsr-colh ussr"><span class="ic">☭</span>USSR</div>
@@ -97,7 +102,7 @@
     </div>
   </section>
 
-  <section class="tsr-sec" id="ops">
+  <section class="tsr-sec card" id="ops">
     <h2 class="tsr-h"><span>Ops played <button type="button" class="tsr-help" data-help="ops" aria-label="About Ops played and costly Ops">?</button></span></h2>
     <div class="tsr-grid">
       <div class="tsr-colh us">US<span class="ic">★</span></div><div></div><div class="tsr-colh ussr"><span class="ic">☭</span>USSR</div>
@@ -117,7 +122,7 @@
     </div>
   </section>
 
-  <section class="tsr-sec" id="scorings">
+  <section class="tsr-sec card" id="scorings">
     <h2 class="tsr-h"><span>Scoring cards played <button type="button" class="tsr-help" data-help="scor" aria-label="About scoring cards played">?</button></span></h2>
     <div class="tsr-grid">
       <div class="tsr-colh us">US<span class="ic">★</span></div><div></div><div class="tsr-colh ussr"><span class="ic">☭</span>USSR</div>
@@ -138,7 +143,7 @@
   </section>
   </div>
 </div>
-</div>
+</main>
 <p class="foot">Unofficial fan tool for Playdek's Twilight Struggle game logs. Twilight Struggle is © GMT Games; this site is not affiliated with GMT Games or Playdek.</p>
 </body>
 </html>

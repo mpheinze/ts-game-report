@@ -1,6 +1,6 @@
-.tsr { --us:#3f6fc0; --us-soft:#a9c0e6; --us-tint:#eef3fb; --ussr:#c4463d; --ussr-soft:#e9b0aa; --ussr-tint:#fbefee;
-  --fg:#1d2433; --muted:#6b7385; --line:#e4e7ee; --track:#f0f2f6;
-  background:#ffffff; color: var(--fg); font-family: var(--font-anthropic-sans); font-variant-numeric: tabular-nums;
+:root { --us:#3f6fc0; --us-soft:#a9c0e6; --us-tint:#eef3fb; --ussr:#c4463d; --ussr-soft:#e9b0aa; --ussr-tint:#fbefee;
+  --fg:#1d2433; --muted:#6b7385; --line:#e4e7ee; --track:#f0f2f6; }
+.tsr { color: var(--fg); font-family: var(--font-anthropic-sans); font-variant-numeric: tabular-nums;
   padding: var(--cds-pad-md) var(--cds-pad-lg); border-radius: var(--cds-radius); }
 .tsr * { box-sizing: border-box; }
 .tsr-top { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap: var(--cds-gap-sm); }

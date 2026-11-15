@@ -34,7 +34,7 @@ Open the site, then drop one or more log files from your `Desktop/Twilight Strug
 
 ```
 index.html          page markup; loads the files below
-css/base.css        page shell: fonts, colours, upload panel, buttons (loaded last)
+css/base.css        page layout: top bar, cards, landing view, buttons (loaded last)
 css/report.css      the report layout (scoreboard, coup rolls, Ops played, scorings)
 js/reference.js     card, country and region reference data
 js/tsparse.js       log parser: turns a Playdek log into one row of game stats
