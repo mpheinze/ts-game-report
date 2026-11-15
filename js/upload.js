@@ -35,10 +35,7 @@ window.addEventListener('dragleave', () => { if (--depth <= 0) { depth = 0; docu
 window.addEventListener('dragover', (e) => e.preventDefault());
 window.addEventListener('drop', (e) => { e.preventDefault(); depth = 0; document.body.classList.remove('dragging'); drop.classList.remove('over'); if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files); });
 const clear = document.getElementById('clear-btn');
-let armed = null;
 clear.addEventListener('click', () => {
-  if (!armed) { clear.textContent = 'Click again to remove all games'; armed = setTimeout(() => { armed = null; clear.textContent = 'Clear my games'; }, 4000); return; }
-  clearTimeout(armed); armed = null; clear.textContent = 'Clear my games';
   S.rows = []; S.game = null; save(); render(); say('All games removed from this browser.');
 });
 let rt = null;

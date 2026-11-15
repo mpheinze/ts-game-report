@@ -2,8 +2,8 @@
 // Centre the title emblems on the middle of the capital letters.
 (function () {
   function align() {
-    document.querySelectorAll('.tsr-title-row').forEach((row) => {
-      const t = row.querySelector('.tsr-title-main'); if (!t) return;
+    document.querySelectorAll('.tsr-title-row, .brand-row').forEach((row) => {
+      const t = row.querySelector('.tsr-title-main, .brand-main'); if (!t) return;
       const cs = getComputedStyle(t);
       const ctx = document.createElement('canvas').getContext('2d'); if (!ctx) return;
       ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
@@ -13,7 +13,7 @@
       const base = (lh - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2 + m.fontBoundingBoxAscent;
       const mid = base - (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
       const off = mid - lh / 2;
-      row.querySelectorAll('.tsr-emblem').forEach((s) => { s.style.transform = `translateY(${off.toFixed(2)}px)`; });
+      row.querySelectorAll('.tsr-emblem, .nav-emb').forEach((s) => { s.style.transform = `translateY(${off.toFixed(2)}px)`; });
     });
   }
   align();

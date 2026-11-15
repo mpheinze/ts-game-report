@@ -21,17 +21,25 @@ body{margin:0;background:var(--page);color:var(--fg);font:15px/1.5 var(--font-an
 .nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(1.4) blur(10px);backdrop-filter:saturate(1.4) blur(10px);
   border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,.6),0 6px 20px rgba(20,30,50,.04)}
 .nav::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--us),#8b93a7 50%,var(--ussr));opacity:.55}
-.nav-in{max-width:var(--page-w);margin:0 auto;padding:10px var(--side-pad);display:flex;align-items:center;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;min-height:64px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
-.nav-emb{width:26px;height:26px;flex:0 0 auto}
+.nav-in{max-width:var(--page-w);margin:0 auto;padding:12px var(--side-pad);min-height:76px;
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"left brand right";align-items:center;gap:10px 24px}
+.nav-left{grid-area:left;justify-self:start;display:flex;width:100%}
+.nav-right{grid-area:right;justify-self:end;display:flex;flex-wrap:wrap;gap:8px}
+.brand{grid-area:brand;justify-self:center;display:flex;flex-direction:column;align-items:center;text-decoration:none;color:inherit;line-height:1}
+.brand-row{display:flex;align-items:center;gap:.45em;font-size:clamp(24px,2.3vw,32px);line-height:1}
+.brand-main{font:400 1em/1 var(--font-anthropic-serif);text-transform:uppercase;letter-spacing:.12em;white-space:nowrap;
+  background:linear-gradient(90deg,var(--us),#4b5873 50%,var(--ussr));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav-emb{width:1.15em;height:1.15em;flex:0 0 auto;display:block}
 .nav-emb.i-us polygon{fill:var(--us)}
 .nav-emb.i-ussr path{fill:none;stroke:var(--ussr);stroke-linecap:round}
 .nav-emb.i-ussr .sickle{stroke-width:2.4}.nav-emb.i-ussr .sickle-h{stroke-width:2.8}.nav-emb.i-ussr .hammer{stroke-width:2.4}.nav-emb.i-ussr .hammer-h{stroke-width:3.8;stroke-linecap:butt}
-.brand-t{display:flex;flex-direction:column;line-height:1.05}
-.brand-main{font:400 20px/1.1 var(--font-anthropic-serif);text-transform:uppercase;letter-spacing:.12em;
-  background:linear-gradient(90deg,var(--us),#4b5873 50%,var(--ussr));-webkit-background-clip:text;background-clip:text;color:transparent}
-.brand-sub{font:600 10px/1.4 var(--font-anthropic-sans);letter-spacing:.42em;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.nav-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.brand-sub{font:600 10px/1 var(--font-anthropic-sans);letter-spacing:.5em;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-left:.5em}
+.nav-left .dash-select{width:100%;max-width:26rem}
+.nav-right .tsr-btn{color:var(--fg);border-color:var(--line);background:#fff;font-size:14px;font-weight:500}
+.nav-right .tsr-btn:hover{background:#f6f7f9;border-color:#cfd4de}
+@media (max-width:1180px){
+  .nav-in{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand brand" "left right"}
+}
 
 /* --- buttons and select --- */
 .tsr-btn{min-height:38px}
@@ -58,8 +66,7 @@ body{margin:0;background:var(--page);color:var(--fg);font:15px/1.5 var(--font-an
 .foot a{color:inherit}
 
 /* --- landing (no games yet) --- */
-.tsr-top[data-when=empty]{padding:clamp(24px,6vh,64px) 0 4px}
-.drop{margin:var(--cds-gap-lg) auto var(--cds-gap-md);max-width:640px;border:2px dashed var(--us-soft);border-radius:16px;padding:clamp(22px,5vw,44px) 20px;text-align:center;
+.drop{margin:clamp(24px,8vh,96px) auto var(--cds-gap-md);max-width:640px;border:2px dashed var(--us-soft);border-radius:16px;padding:clamp(22px,5vw,44px) 20px;text-align:center;
   background:linear-gradient(90deg,var(--us-tint),#fff 50%,var(--ussr-tint));cursor:pointer;transition:border-color .2s,background .2s;box-shadow:0 8px 28px rgba(20,30,50,.05)}
 .drop.over{border-color:var(--us)}
 .drop h2{margin:0 0 .3em;font:400 clamp(20px,3vw,26px)/1.2 var(--font-anthropic-serif);color:var(--fg)}
@@ -75,11 +82,10 @@ body.dragging .wrap{outline:3px dashed var(--us-soft);outline-offset:-6px;border
 /* --- phones --- */
 @media (max-width:760px){
   .nav{position:static}
-  .nav-in{flex-direction:column;align-items:stretch;gap:10px}
-  .brand{justify-content:center}
-  .nav-ctl{width:100%}
-  .nav-ctl .dash-select{min-width:0;width:100%}
-  .nav-ctl .tsr-btn{flex:1}
+  .nav-in{grid-template-columns:minmax(0,1fr);grid-template-areas:"brand" "left" "right"}
+  .nav-left .dash-select{max-width:none}
+  .nav-right{justify-self:stretch}
+  .nav-right .tsr-btn{flex:1}
 }
 @media (max-width:640px){
   .wrap{padding-top:14px}
@@ -94,10 +100,9 @@ body.dragging .wrap{outline:3px dashed var(--us-soft);outline-offset:-6px;border
 }
 
 /* --- wide screens: scoreboard across the top, then coup rolls and scoring cards on the left, Ops played on the right --- */
-@media (min-width:1600px){
-  .tsr-body{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"board board" "dice ops" "scor ops";align-items:stretch}
+@media (min-width:1680px){
+  .tsr-body{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);grid-template-areas:"board board" "dice ops" "scor ops";align-items:stretch}
   .tsr-board{grid-area:board}
   #dice{grid-area:dice} #ops{grid-area:ops} #scorings{grid-area:scor}
-  .tsr-body .tsr-grid{grid-template-columns:minmax(0,1fr) minmax(6.5rem,9.5rem) minmax(0,1fr)}
-  .tsr-body .tsr-mid{text-wrap:balance}
+  .tsr-body .tsr-grid{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
 }

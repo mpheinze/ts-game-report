@@ -8,40 +8,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/report.css?v=9">
-<link rel="stylesheet" href="css/base.css?v=9">
-<script defer src="js/reference.js?v=9"></script>
-<script defer src="js/tsparse.js?v=9"></script>
-<script defer src="js/engine.js?v=9"></script>
-<script defer src="js/report.js?v=9"></script>
-<script defer src="js/upload.js?v=9"></script>
+<link rel="stylesheet" href="css/report.css?v=11">
+<link rel="stylesheet" href="css/base.css?v=11">
+<script defer src="js/reference.js?v=11"></script>
+<script defer src="js/tsparse.js?v=11"></script>
+<script defer src="js/engine.js?v=11"></script>
+<script defer src="js/report.js?v=11"></script>
+<script defer src="js/upload.js?v=11"></script>
 </head>
 <body>
 <header class="nav">
   <div class="nav-in">
-    <a class="brand" href="./" aria-label="Twilight Struggle Game Report, home"><svg class="nav-emb i-us" viewBox="1 0.045 22 22" aria-hidden="true"><polygon points="12.000,2.000 14.245,8.910 21.511,8.910 15.633,13.180 17.878,20.090 12.000,15.820 6.122,20.090 8.367,13.180 2.489,8.910 9.755,8.910"/></svg><span class="brand-t"><span class="brand-main">Twilight Struggle</span><span class="brand-sub">Game Report</span></span><svg class="nav-emb i-ussr" viewBox="-0.25 0.9 22 22" aria-hidden="true"><path class="sickle" d="M5.5 16.5 A7.5 7.5 0 1 0 15 4.5"/><path class="sickle-h" d="M5.5 16.5 L3.5 19.5"/><path class="hammer" d="M8.5 8.5 L18 19"/><path class="hammer-h" d="M5.6 10.6 L10.6 5.6"/></svg></a>
-    <nav class="tsr-controls nav-ctl" data-when="games" hidden aria-label="Game controls">
-      <select class="dash-select" id="game-select" data-draw="gamepick" aria-label="Game"></select>
-      <button type="button" class="tsr-btn" data-pick>＋ Add games</button>
-      <button type="button" class="tsr-btn ghost danger" id="clear-btn">Clear my games</button>
-    </nav>
+    <div class="nav-left" data-when="games" hidden><select class="dash-select" id="game-select" data-draw="gamepick" aria-label="Game"></select></div>
+    <a class="brand" href="./" aria-label="Twilight Struggle Game Report, home"><span class="brand-row"><svg class="nav-emb i-us" viewBox="1 0.045 22 22" aria-hidden="true"><polygon points="12.000,2.000 14.245,8.910 21.511,8.910 15.633,13.180 17.878,20.090 12.000,15.820 6.122,20.090 8.367,13.180 2.489,8.910 9.755,8.910"/></svg><span class="brand-main">Twilight Struggle</span><svg class="nav-emb i-ussr" viewBox="-0.25 0.9 22 22" aria-hidden="true"><path class="sickle" d="M5.5 16.5 A7.5 7.5 0 1 0 15 4.5"/><path class="sickle-h" d="M5.5 16.5 L3.5 19.5"/><path class="hammer" d="M8.5 8.5 L18 19"/><path class="hammer-h" d="M5.6 10.6 L10.6 5.6"/></svg></span><span class="brand-sub">Game Report</span></a>
+    <nav class="nav-right" data-when="games" hidden aria-label="Game controls"><button type="button" class="tsr-btn" data-pick>＋ Add games</button><button type="button" class="tsr-btn" id="clear-btn">Clear my games</button></nav>
   </div>
 </header>
 <input type="file" id="add-file" multiple accept=".txt,text/plain" hidden>
 <main class="wrap">
 <div class="tsr" id="report">
-  <div class="tsr-top" data-when="empty">
-    <div class="tsr-brand">
-      <h1 class="tsr-title" id="title">
-        <span class="tsr-title-row">
-          <svg class="tsr-emblem i-us" viewBox="1 0.045 22 22" aria-hidden="true"><polygon points="12.000,2.000 14.245,8.910 21.511,8.910 15.633,13.180 17.878,20.090 12.000,15.820 6.122,20.090 8.367,13.180 2.489,8.910 9.755,8.910"/></svg>
-          <span class="tsr-title-main">Twilight Struggle</span>
-          <svg class="tsr-emblem i-ussr" viewBox="-0.25 0.9 22 22" aria-hidden="true"><path class="sickle" d="M5.5 16.5 A7.5 7.5 0 1 0 15 4.5"/><path class="sickle-h" d="M5.5 16.5 L3.5 19.5"/><path class="hammer" d="M8.5 8.5 L18 19"/><path class="hammer-h" d="M5.6 10.6 L10.6 5.6"/></svg>
-        </span>
-        <span class="tsr-title-sub">Game Report</span>
-      </h1>
-    </div>
-  </div>
   <p class="tsr-addmsg" data-draw="addstatus" aria-live="polite"></p>
 
   <div class="drop" id="drop" data-when="empty" role="button" tabindex="0" aria-label="Add game log files">
