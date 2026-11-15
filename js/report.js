@@ -224,7 +224,7 @@ dash.draw('scor', (el) => {
       '<b>Costly</b> Ops come from opponent cards whose event fired, or that were sent to the Space Race to avoid the event. They are the light part of the bar.',
       '<b>/card</b> is the average Ops per card. Early War is turns 1–3, Mid War 4–7, Late War 8–10.'],
     timeline: ['The score after every step of the game: the headlines, each action round and the end of each turn. Above the middle line the US is ahead; below it the USSR is ahead.',
-      'Hover over or tap the chart to see the action round, the card played and the score at that point. Dashed lines mark 20 VP, which wins the game.'],
+      'Hover over or tap the chart to see the action round, the card played, how many VP changed hands in that step and the score after it. The scale always runs to 20 VP each way; the dashed lines mark 20 VP, which wins the game.'],
     scor: ['<b>Scoring cards</b> this player played, for the whole game and per era, in the order they were played.',
       'Each card has its own colour. Hover over or tap a card to see which region it scored and in which turn.']
   };
@@ -279,8 +279,7 @@ dash.draw('timeline', (el) => {
   const W = Math.max(320, el.clientWidth || 800), narrow = W < 560;
   const H = narrow ? 220 : 260, L = narrow ? 52 : 64, R = 14, T = 14, B = 28;
   const iw = W - L - R, ih = H - T - B;
-  const maxAbs = Math.max(...pts.map((p) => Math.abs(p[4])));
-  const dom = Math.min(20, Math.max(5, Math.ceil(maxAbs / 5) * 5));
+  const dom = 20; // fixed: Even in the middle, 20 VP each way
   const n = pts.length;
   const x = (i) => L + (n === 1 ? iw / 2 : (i / (n - 1)) * iw);
   const y = (v) => T + ih / 2 - (Math.max(-20, Math.min(20, v)) / dom) * (ih / 2);
@@ -306,9 +305,9 @@ dash.draw('timeline', (el) => {
     if (v !== 0) mk('line', { x1: L, x2: L + iw, y1: yy, y2: yy, stroke: '#eef0f4', 'stroke-width': 1 }, ax);
     if (step === 1 && Math.abs(v) % (dom <= 5 ? 1 : 5) && v !== 0) continue;
     const lab = mk('text', { x: L - 8, y: yy, dy: '0.35em', 'text-anchor': 'end', class: v > 0 ? 'us' : v < 0 ? 'ussr' : '' }, ax);
-    lab.textContent = v === 0 ? 'Even' : v > 0 ? `US +${v}` : `USSR ${-v}`;
+    lab.textContent = v === 0 ? 'Even' : v > 0 ? `US ${v}` : `USSR ${-v}`;
   }
-  if (dom === 20) {
+  {
     [20, -20].forEach((v) => mk('line', { x1: L, x2: L + iw, y1: y(v), y2: y(v), stroke: v > 0 ? 'var(--us-soft)' : 'var(--ussr-soft)', 'stroke-width': 1, 'stroke-dasharray': '4 3' }, ax));
   }
 
@@ -351,8 +350,13 @@ dash.draw('timeline', (el) => {
     dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(v)); dot.setAttribute('stroke', c); dot.setAttribute('visibility', 'visible');
     tip.replaceChildren();
     const a = document.createElement('div'); a.textContent = what(p);
+    const prev = i > 0 ? pts[i - 1][4] : 0, dv = v - prev;
+    const f = document.createElement('div'); const fs = document.createElement('span');
+    fs.className = dv > 0 ? 'vp-us' : dv < 0 ? 'vp-ussr' : '';
+    fs.textContent = dv > 0 ? `US +${dv} VP` : dv < 0 ? `USSR +${-dv} VP` : 'No change';
+    f.append('Change: ', fs);
     const b = document.createElement('div'); const s = document.createElement('span'); s.className = v > 0 ? 'vp-us' : v < 0 ? 'vp-ussr' : ''; s.textContent = tsr.fmtVP(v); b.append('Score: ', s);
-    tip.append(a, b); tip.hidden = false;
+    tip.append(a, f, b); tip.hidden = false;
     const k = box.width / W; let left = x(i) * k; const tw = tip.offsetWidth;
     left = Math.max(tw / 2, Math.min(box.width - tw / 2, left));
     tip.style.left = left + 'px'; tip.style.top = (y(v) * k) + 'px';
