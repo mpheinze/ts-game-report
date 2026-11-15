@@ -197,7 +197,7 @@ dash.draw('scor', (el) => {
     scor: ['<b>Scoring cards</b> this player played, for the whole game and per era.']
   };
   const pop = document.createElement('div'); pop.className = 'tsr-pop'; pop.id = 'tsr-pop'; pop.setAttribute('role', 'tooltip'); pop.hidden = true;
-  document.body.appendChild(pop);
+  (document.getElementById('report') || document.body).appendChild(pop);
   let cur = null, pinned = false;
   function show(btn) {
     const k = btn.dataset.help; if (!HELP[k]) return;
