@@ -35,6 +35,30 @@
     if (line.includes('Score is even')) return 0;
     return null;
   }
+  // Where each VP change in one phase came from. lines: the header text after the phase label, then the body.
+  // Returns [[signedDelta, source], ...]; positive deltas are US gains.
+  function vpSources(lines, vpBefore, ctx) {
+    const out = []; let score = vpBefore, ev = null, evIdx = -1, sp = null, spIdx = -1, opsShort = {};
+    lines.forEach((l, i) => {
+      let m = /(?:^|: )Event: (.+?)$/.exec(l); if (m) { ev = m[1].replace(/\*$/, ''); evIdx = i; }
+      m = /(US|USSR) advances to (\d+) in the Space Race/.exec(l); if (m) { sp = m[2]; spIdx = i; }
+      m = /^(US|USSR) Military Ops to (\d+)/.exec(l); if (m) opsShort[m[1]] = parseInt(m[2], 10);
+      const s = parseScore(l); if (s === null) return;
+      const d = s - score; score = s;
+      let src;
+      if (/No VP awarded/.test(l)) src = ev ? `${ev}: no VP awarded` : 'No VP awarded';
+      else if (spIdx > evIdx || (spIdx >= 0 && ctx.mode === 'space' && spIdx >= evIdx)) src = (ctx.mode === 'space' && evIdx < 0 ? 'Space Race' : `${ev || 'Space Race'} (Space Race)`) + `, box ${sp}`;
+      else if (ev) src = ev;
+      else if (ctx.kind === 'cleanup') src = `Military Ops shortfall (${d > 0 ? 'USSR' : 'US'} below DEFCON requirement)`;
+      else if (ctx.kind === 'headline') src = `Headline: ${ctx.headlines}`;
+      else if (ctx.card) src = ctx.card.replace(/\*$/, '');
+      else src = 'Not stated in the log';
+      const prevGap = out.length && out[out.length - 1][2] && i > 0 && parseScore(lines[i - 1]) !== null;
+      const gap = prevGap || (i > 0 ? lines[i - 1].trim() === '' : (ctx.kind === 'ar' && !ctx.card));
+      out.push([d, src, gap]);
+    });
+    return out;
+  }
   class Board {
     constructor() { this.inf = {}; for (const [c, v] of Object.entries(COUNTRY)) this.inf[c] = [v.us0, v.ussr0]; }
     has(c) { return Object.prototype.hasOwnProperty.call(this.inf, c); }
@@ -146,6 +170,7 @@
       if (turn !== modTurn || /^Turn \d+, Cleanup/.test(h)) { redScared.clear(); boosted.clear(); modTurn = turn; }
       const MOD = (sd) => (boosted.has(sd) ? 1 : 0) - (redScared.has(sd) ? 1 : 0);
       const info = { turn, header: h, kind: null, side: null, card: null, action: null, lines: body, ar: null };
+      const vpBefore = vp;
       const mh = /^Turn \d+, Headline Phase: (.+?) & (.+?)(?:: (.*))?$/.exec(h);
       const mc = /^Turn \d+, Cleanup(?:: (.*))?$/.exec(h);
       const ma = /^Turn \d+, (US|USSR) AR(\d+)(?:: (.+?))?(?:: (.*))?$/.exec(h);
@@ -209,7 +234,10 @@
       // VP after every phase: [turn, phase, actionRound, cardNo, vp]; phase is 'H' headline, 'US'/'USSR' action round, 'C' cleanup
       // Playdek numbers Cleanup headers by action-round count, not by game turn, so cleanup keeps the turn it follows
       if (info.kind !== 'cleanup') gameTurn = turn;
-      timeline.push([gameTurn, info.kind === 'headline' ? 'H' : info.kind === 'cleanup' ? 'C' : info.kind === 'ar' ? info.side : 'X', info.ar, info.card, vp]);
+      const headTail = (mh && mh[3]) || (mc && mc[1]) || (ma && ma[4]) || null;
+      const srcs = vpSources((headTail ? [headTail] : []).concat(body), vpBefore,
+        { kind: info.kind, mode: info.action && info.action.startsWith('Space Race') ? 'space' : null, card: info.cardname || null, headlines: mh ? `${mh[1].replace(/\*$/, '')} / ${mh[2].replace(/\*$/, '')}` : '' });
+      timeline.push([gameTurn, info.kind === 'headline' ? 'H' : info.kind === 'cleanup' ? 'C' : info.kind === 'ar' ? info.side : 'X', info.ar, info.card, vp, srcs]);
       last = info;
     }
 
@@ -303,7 +331,10 @@
       const sets = { coup_all: coups, coup_bg: g('coup_bg'), coup_nonbg: g('coup_nonbg'), realign: g('realign'), war: g('war'), space: g('space'), all: coups.concat(g('realign'), g('war'), g('space')) };
       dstats[s] = {}; for (const [k, v] of Object.entries(sets)) dstats[s][k] = { avg: avg(v), n: v.length };
     }
-    if (finalVp !== vp) timeline.push([gameTurn, 'E', null, null, finalVp]);
+    // Final Scoring lines are printed after the last action round, set apart by a blank line
+    if (ending === 'V7' && timeline.length) for (const s of timeline[timeline.length - 1][5]) if (s[2]) s[1] = 'Final Scoring';
+    for (const e of timeline) for (const s of e[5]) s.length = 2;
+    if (finalVp !== vp) timeline.push([gameTurn, 'E', null, null, finalVp, [[finalVp - vp, note || ENDING_NAME[ending] || 'Game end']]]);
     return { id: gid, players, clock, turn: last.turn, final_vp: finalVp, ending, ending_name: ENDING_NAME[ending], winner, note, wars, bgflip, dice: dstats, ops, scorSeq, timeline };
   }
 

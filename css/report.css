@@ -200,7 +200,11 @@
 .tsr-tl .turnlab { font: 600 11px var(--font-anthropic-sans); fill: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
 .tsr-tl .tl-hit { fill: transparent; cursor: crosshair; }
 .tsr-tl-tip { position: absolute; pointer-events: none; z-index: 5; background: #fff; border: 1px solid var(--line); border-radius: var(--cds-radius);
-  box-shadow: 0 6px 18px rgba(20,30,50,.14); padding: .4em .65em; font-size: 12.5px; line-height: 1.4; color: var(--fg); white-space: nowrap; transform: translate(-50%, calc(-100% - 12px)); }
+  box-shadow: 0 6px 18px rgba(20,30,50,.14); padding: .4em .65em; font-size: 12.5px; line-height: 1.4; color: var(--fg); white-space: normal; width: max-content; max-width: min(24rem, 90vw); transform: translate(-50%, calc(-100% - 12px)); }
 .tsr-tl-tip b { font-weight: 600; }
+.tsr-tl-tip > div:first-child { font-weight: 600; margin-bottom: .15em; }
+.tsr-tl-tip .flow { color: var(--fg); }
+.tsr-tl-tip .flow.none { color: var(--muted); }
+.tsr-tl-tip .stock { margin-top: .2em; padding-top: .2em; border-top: 1px solid var(--line); }
 .tsr-tl-tip .vp-us { color: var(--us); font-weight: 600; } .tsr-tl-tip .vp-ussr { color: var(--ussr); font-weight: 600; }
 .tsr-tl-empty { margin: .5em 0; text-align: center; color: var(--muted); font-size: 14px; }

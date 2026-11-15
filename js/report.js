@@ -338,7 +338,7 @@ dash.draw('timeline', (el) => {
     if (ph === 'S') return 'Start of the game';
     if (ph === 'H') return `Turn ${turn} · Headlines`;
     if (ph === 'C') return `Turn ${turn} · End of turn`;
-    if (ph === 'E') return `Turn ${turn} · Game end (not in the log, worked out from the board)`;
+    if (ph === 'E') return `Turn ${turn} · Game end`;
     const nm = card && cards[card] ? ` · ${cards[card][0]}` : '';
     return `Turn ${turn} · ${ph} AR${ar}${nm}`;
   };
@@ -351,12 +351,19 @@ dash.draw('timeline', (el) => {
     tip.replaceChildren();
     const a = document.createElement('div'); a.textContent = what(p);
     const prev = i > 0 ? pts[i - 1][4] : 0, dv = v - prev;
-    const f = document.createElement('div'); const fs = document.createElement('span');
-    fs.className = dv > 0 ? 'vp-us' : dv < 0 ? 'vp-ussr' : '';
-    fs.textContent = dv > 0 ? `US +${dv} VP` : dv < 0 ? `USSR +${-dv} VP` : 'No change';
-    f.append('Change: ', fs);
-    const b = document.createElement('div'); const s = document.createElement('span'); s.className = v > 0 ? 'vp-us' : v < 0 ? 'vp-ussr' : ''; s.textContent = tsr.fmtVP(v); b.append('Score: ', s);
-    tip.append(a, f, b); tip.hidden = false;
+    const flows = [];
+    const flowLine = (d, src) => {
+      const f = document.createElement('div'); f.className = 'flow';
+      const fs = document.createElement('span'); fs.className = d > 0 ? 'vp-us' : d < 0 ? 'vp-ussr' : '';
+      fs.textContent = d > 0 ? `US +${d} VP` : d < 0 ? `USSR +${-d} VP` : '±0 VP';
+      f.append(fs, ' ', document.createTextNode(src ? `from ${src}` : ''));
+      return f;
+    };
+    if (Array.isArray(p[5]) && p[5].length) for (const [d, src] of p[5]) flows.push(flowLine(d, src));
+    else if (dv !== 0) flows.push(flowLine(dv, ''));
+    else if (p[1] !== 'S') { const f = document.createElement('div'); f.className = 'flow none'; f.textContent = 'No VP change'; flows.push(f); }
+    const b = document.createElement('div'); b.className = 'stock'; const s = document.createElement('span'); s.className = v > 0 ? 'vp-us' : v < 0 ? 'vp-ussr' : ''; s.textContent = tsr.fmtVP(v); b.append('Score: ', s);
+    tip.append(a, ...flows, b); tip.hidden = false;
     const k = box.width / W; let left = x(i) * k; const tw = tip.offsetWidth;
     left = Math.max(tw / 2, Math.min(box.width - tw / 2, left));
     tip.style.left = left + 'px'; tip.style.top = (y(v) * k) + 'px';
