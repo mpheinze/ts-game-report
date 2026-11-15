@@ -49,6 +49,9 @@
       if (/No VP awarded/.test(l)) src = ev ? `${ev}: no VP awarded` : 'No VP awarded';
       else if (spIdx > evIdx || (spIdx >= 0 && ctx.mode === 'space' && spIdx >= evIdx)) src = (ctx.mode === 'space' && evIdx < 0 ? 'Space Race' : `${ev || 'Space Race'} (Space Race)`) + `, box ${sp}`;
       else if (ev) src = ev;
+      // VP printed on the action-round header before the card resolves come from an ongoing effect
+      else if (i === 0 && ctx.kind === 'ar' && ctx.hasHead && ctx.side === 'US' && d === -2) src = 'Flower Power (US played a war card)';
+      else if (i === 0 && ctx.kind === 'ar' && ctx.hasHead && ctx.side === 'US' && d === -3) src = 'We Will Bury You (US did not play UN Intervention)';
       else if (ctx.kind === 'cleanup') src = `Military Ops shortfall (${d > 0 ? 'USSR' : 'US'} below DEFCON requirement)`;
       else if (ctx.kind === 'headline') src = `Headline: ${ctx.headlines}`;
       else if (ctx.card) src = ctx.card.replace(/\*$/, '');
@@ -58,6 +61,18 @@
       out.push([d, src, gap]);
     });
     return out;
+  }
+  // How the action-round card was used, from the action text: Event, Influence, Coup, Realignment, Space Race or Discard
+  function usageOf(lines) {
+    for (const l of lines) {
+      if (/^Place Influence\b/.test(l)) return 'Influence';
+      if (/^Coup\b/.test(l)) return 'Coup';
+      if (/^Realignment\b/.test(l)) return 'Realignment';
+      if (/^Space Race\b/.test(l)) return 'Space Race';
+      if (/^(?:US|USSR) discards\b/.test(l)) return 'Discarded';
+      if (/^Event: /.test(l)) return 'Event';
+    }
+    return null;
   }
   class Board {
     constructor() { this.inf = {}; for (const [c, v] of Object.entries(COUNTRY)) this.inf[c] = [v.us0, v.ussr0]; }
@@ -236,8 +251,8 @@
       if (info.kind !== 'cleanup') gameTurn = turn;
       const headTail = (mh && mh[3]) || (mc && mc[1]) || (ma && ma[4]) || null;
       const srcs = vpSources((headTail ? [headTail] : []).concat(body), vpBefore,
-        { kind: info.kind, mode: info.action && info.action.startsWith('Space Race') ? 'space' : null, card: info.cardname || null, headlines: mh ? `${mh[1].replace(/\*$/, '')} / ${mh[2].replace(/\*$/, '')}` : '' });
-      timeline.push([gameTurn, info.kind === 'headline' ? 'H' : info.kind === 'cleanup' ? 'C' : info.kind === 'ar' ? info.side : 'X', info.ar, info.card, vp, srcs]);
+        { kind: info.kind, side: info.side, hasHead: !!headTail, mode: info.action && info.action.startsWith('Space Race') ? 'space' : null, card: info.cardname || null, headlines: mh ? `${mh[1].replace(/\*$/, '')} / ${mh[2].replace(/\*$/, '')}` : '' });
+      timeline.push([gameTurn, info.kind === 'headline' ? 'H' : info.kind === 'cleanup' ? 'C' : info.kind === 'ar' ? info.side : 'X', info.ar, info.card, vp, srcs, info.kind === 'ar' ? usageOf((headTail ? [headTail] : []).concat(body)) : null]);
       last = info;
     }
 

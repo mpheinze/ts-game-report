@@ -339,7 +339,8 @@ dash.draw('timeline', (el) => {
     if (ph === 'H') return `Turn ${turn} · Headlines`;
     if (ph === 'C') return `Turn ${turn} · End of turn`;
     if (ph === 'E') return `Turn ${turn} · Game end`;
-    const nm = card && cards[card] ? ` · ${cards[card][0]}` : '';
+    const use = p[6] ? ` (${p[6]})` : '';
+    const nm = card && cards[card] ? ` · ${cards[card][0]}${use}` : '';
     return `Turn ${turn} · ${ph} AR${ar}${nm}`;
   };
   const show = (clientX) => {
