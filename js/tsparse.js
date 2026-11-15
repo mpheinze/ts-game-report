@@ -139,7 +139,7 @@
       close(); return out;
     }
 
-    let last = null;
+    let last = null; const timeline = []; let gameTurn = 0;
     for (const [k, end] of blocks) {
       const h = L[k], body = L.slice(k + 1, end);
       turn = parseInt(/^Turn (\d+), /.exec(h)[1], 10);
@@ -206,6 +206,10 @@
         if (kind === 'war') { wars[who].fought += 1; if (target[0] === 'VICTORY') wars[who].won += 1; }
       }
       info.defconAfter = defcon; info.vpAfter = vp; info.dice = diceLines;
+      // VP after every phase: [turn, phase, actionRound, cardNo, vp]; phase is 'H' headline, 'US'/'USSR' action round, 'C' cleanup
+      // Playdek numbers Cleanup headers by action-round count, not by game turn, so cleanup keeps the turn it follows
+      if (info.kind !== 'cleanup') gameTurn = turn;
+      timeline.push([gameTurn, info.kind === 'headline' ? 'H' : info.kind === 'cleanup' ? 'C' : info.kind === 'ar' ? info.side : 'X', info.ar, info.card, vp]);
       last = info;
     }
 
@@ -299,7 +303,8 @@
       const sets = { coup_all: coups, coup_bg: g('coup_bg'), coup_nonbg: g('coup_nonbg'), realign: g('realign'), war: g('war'), space: g('space'), all: coups.concat(g('realign'), g('war'), g('space')) };
       dstats[s] = {}; for (const [k, v] of Object.entries(sets)) dstats[s][k] = { avg: avg(v), n: v.length };
     }
-    return { id: gid, players, clock, turn: last.turn, final_vp: finalVp, ending, ending_name: ENDING_NAME[ending], winner, note, wars, bgflip, dice: dstats, ops, scorSeq };
+    if (finalVp !== vp) timeline.push([gameTurn, 'E', null, null, finalVp]);
+    return { id: gid, players, clock, turn: last.turn, final_vp: finalVp, ending, ending_name: ENDING_NAME[ending], winner, note, wars, bgflip, dice: dstats, ops, scorSeq, timeline };
   }
 
   // make_rows.py
@@ -307,7 +312,7 @@
     const me = g.players.US === me_name ? 'US' : 'USSR', opp = me === 'US' ? 'USSR' : 'US';
     const r = { id: g.id, us_player: g.players.US, ussr_player: g.players.USSR, my_side: me, opponent: g.players[opp], turn: g.turn,
       clock_min: g.clock ? parseInt(g.clock, 10) : null, final_vp: g.final_vp, ending_code: g.ending, ending: g.ending_name,
-      winner: g.winner || 'Draw', result: g.winner === me ? 'Win' : (!g.winner ? 'Draw' : 'Loss'), ending_note: g.note };
+      vp_timeline: g.timeline, winner: g.winner || 'Draw', result: g.winner === me ? 'Win' : (!g.winner ? 'Draw' : 'Loss'), ending_note: g.note };
     for (const s of ['US', 'USSR']) {
       const p = s.toLowerCase();
       for (const [k, v] of Object.entries(g.dice[s])) { r[`${p}_${k}_avg`] = v.avg; r[`${p}_${k}_n`] = v.n; }

@@ -39,7 +39,7 @@ clear.addEventListener('click', () => {
   S.rows = []; S.game = null; save(); render(); say('All games removed from this browser.');
 });
 let rt = null;
-window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => dash.draw('track'), 120); });
+window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { dash.draw('track'); dash.draw('timeline'); }, 120); });
 load();
 render();
 }

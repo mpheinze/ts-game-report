@@ -37,7 +37,7 @@ index.html          page markup; loads the files below
 css/base.css        page layout: top bar, cards, landing view, buttons (loaded last)
 css/report.css      the report layout (scoreboard, coup rolls, Ops played, scorings)
 js/reference.js     card, country and region reference data
-js/tsparse.js       log parser: turns a Playdek log into one row of game stats
+js/tsparse.js       log parser: turns a Playdek log into one row of game stats, incl. the VP timeline
 js/engine.js        keeps the games in localStorage and redraws the report
 js/report.js        draws each part of the report
 js/upload.js        file picker, drag and drop, clear button

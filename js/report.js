@@ -223,6 +223,8 @@ dash.draw('scor', (el) => {
     ops: ['<b>Total</b> is the Ops value of every non-scoring card this player played: for Ops, as an event or on the Space Race. Values include Red Scare/Purge, Containment and Brezhnev Doctrine. The China Card counts 5 when all its Ops went into Asia.',
       '<b>Costly</b> Ops come from opponent cards whose event fired, or that were sent to the Space Race to avoid the event. They are the light part of the bar.',
       '<b>/card</b> is the average Ops per card. Early War is turns 1–3, Mid War 4–7, Late War 8–10.'],
+    timeline: ['The score after every step of the game: the headlines, each action round and the end of each turn. Above the middle line the US is ahead; below it the USSR is ahead.',
+      'Hover over or tap the chart to see the action round, the card played and the score at that point. Dashed lines mark 20 VP, which wins the game.'],
     scor: ['<b>Scoring cards</b> this player played, for the whole game and per era, in the order they were played.',
       'Each card has its own colour. Hover over or tap a card to see which region it scored and in which turn.']
   };
@@ -264,3 +266,100 @@ dash.draw('scor', (el) => {
   window.addEventListener('scroll', () => { if (cur) hide(); }, { passive: true });
   window.addEventListener('resize', () => { if (cur) hide(); });
 })();
+
+// ---------- VP timeline: score after every headline, action round and turn end ----------
+dash.draw('timeline', (el) => {
+  const r = tsr.row(); el.replaceChildren(); if (!r) return;
+  const tl = r.vp_timeline;
+  if (!Array.isArray(tl) || !tl.length) { el.append(tsr.span('tsr-tl-empty', 'Add this game\'s log again to see the timeline.', 0, 0, 'p')); return; }
+  const cards = (window.TS_REFERENCE && window.TS_REFERENCE.cards) || {};
+  const pts = [[tl[0][0], 'S', null, null, 0]].concat(tl);
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.append(n); return n; };
+  const W = Math.max(320, el.clientWidth || 800), narrow = W < 560;
+  const H = narrow ? 220 : 260, L = narrow ? 52 : 64, R = 14, T = 14, B = 28;
+  const iw = W - L - R, ih = H - T - B;
+  const maxAbs = Math.max(...pts.map((p) => Math.abs(p[4])));
+  const dom = Math.min(20, Math.max(5, Math.ceil(maxAbs / 5) * 5));
+  const n = pts.length;
+  const x = (i) => L + (n === 1 ? iw / 2 : (i / (n - 1)) * iw);
+  const y = (v) => T + ih / 2 - (Math.max(-20, Math.min(20, v)) / dom) * (ih / 2);
+  const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Victory points after every action round, from even at the start to ${tsr.fmtVP(r.final_vp)} at the end` });
+
+  // turn bands and labels
+  const turns = []; pts.forEach((p, i) => { if (!turns.length || turns[turns.length - 1].t !== p[0]) turns.push({ t: p[0], a: i, b: i }); else turns[turns.length - 1].b = i; });
+  const g0 = mk('g', {}, svg);
+  turns.forEach((tb, k) => {
+    const x0 = k === 0 ? L : (x(tb.a - 1) + x(tb.a)) / 2, x1 = k === turns.length - 1 ? L + iw : (x(tb.b) + x(tb.b + 1)) / 2;
+    if (k % 2 === 0) mk('rect', { x: x0, y: T, width: Math.max(0, x1 - x0), height: ih, fill: '#f6f7fa' }, g0);
+    if (k > 0) mk('line', { x1: x0, x2: x0, y1: T, y2: T + ih, stroke: '#e4e7ee', 'stroke-width': 1 }, g0);
+    const lab = mk('text', { x: (x0 + x1) / 2, y: H - 8, 'text-anchor': 'middle', class: 'turnlab' }, g0);
+    lab.textContent = narrow ? String(tb.t) : `Turn ${tb.t}`;
+  });
+
+  // y axis
+  const ax = mk('g', { class: 'axis' }, svg);
+  const step = dom <= 5 ? 1 : 5;
+  for (let v = -dom; v <= dom; v += step) {
+    if (step === 1 && v % 1) continue;
+    const yy = y(v);
+    if (v !== 0) mk('line', { x1: L, x2: L + iw, y1: yy, y2: yy, stroke: '#eef0f4', 'stroke-width': 1 }, ax);
+    if (step === 1 && Math.abs(v) % (dom <= 5 ? 1 : 5) && v !== 0) continue;
+    const lab = mk('text', { x: L - 8, y: yy, dy: '0.35em', 'text-anchor': 'end', class: v > 0 ? 'us' : v < 0 ? 'ussr' : '' }, ax);
+    lab.textContent = v === 0 ? 'Even' : v > 0 ? `US +${v}` : `USSR ${-v}`;
+  }
+  if (dom === 20) {
+    [20, -20].forEach((v) => mk('line', { x1: L, x2: L + iw, y1: y(v), y2: y(v), stroke: v > 0 ? 'var(--us-soft)' : 'var(--ussr-soft)', 'stroke-width': 1, 'stroke-dasharray': '4 3' }, ax));
+  }
+
+  // stepped VP line with blue fill above zero and red fill below
+  const id = 'tl' + String(r.id).replace(/\W/g, '');
+  const defs = mk('defs', {}, svg);
+  const cu = mk('clipPath', { id: id + 'u' }, defs); mk('rect', { x: L, y: T - 2, width: iw, height: ih / 2 + 2 }, cu);
+  const cd = mk('clipPath', { id: id + 'd' }, defs); mk('rect', { x: L, y: y(0), width: iw, height: ih / 2 + 2 }, cd);
+  let d = `M${x(0)},${y(pts[0][4])}`;
+  for (let i = 1; i < n; i++) d += `H${x(i)}V${y(pts[i][4])}`;
+  const area = d + `V${y(0)}H${x(0)}Z`;
+  mk('path', { d: area, fill: 'var(--us)', 'fill-opacity': 0.14, 'clip-path': `url(#${id}u)` }, svg);
+  mk('path', { d: area, fill: 'var(--ussr)', 'fill-opacity': 0.14, 'clip-path': `url(#${id}d)` }, svg);
+  mk('line', { x1: L, x2: L + iw, y1: y(0), y2: y(0), stroke: '#9aa2b1', 'stroke-width': 1.2 }, svg);
+  mk('path', { d, fill: 'none', stroke: 'var(--us)', 'stroke-width': 2.2, 'stroke-linejoin': 'round', 'clip-path': `url(#${id}u)` }, svg);
+  mk('path', { d, fill: 'none', stroke: 'var(--ussr)', 'stroke-width': 2.2, 'stroke-linejoin': 'round', 'clip-path': `url(#${id}d)` }, svg);
+  const fv = pts[n - 1][4], fc = fv > 0 ? 'var(--us)' : fv < 0 ? 'var(--ussr)' : '#9aa2b1';
+  mk('circle', { cx: x(n - 1), cy: y(fv), r: 4.5, fill: fc, stroke: '#fff', 'stroke-width': 2 }, svg);
+
+  // hover / tap: nearest point
+  const guide = mk('line', { y1: T, y2: T + ih, stroke: '#1d2433', 'stroke-opacity': 0.25, 'stroke-width': 1, visibility: 'hidden' }, svg);
+  const dot = mk('circle', { r: 4.5, fill: '#fff', 'stroke-width': 2.2, visibility: 'hidden' }, svg);
+  const hit = mk('rect', { x: L, y: T, width: iw, height: ih, class: 'tl-hit' }, svg);
+  el.append(svg);
+  const tip = document.createElement('div'); tip.className = 'tsr-tl-tip'; tip.hidden = true; el.append(tip);
+  const what = (p) => {
+    const [turn, ph, ar, card] = p;
+    if (ph === 'S') return 'Start of the game';
+    if (ph === 'H') return `Turn ${turn} · Headlines`;
+    if (ph === 'C') return `Turn ${turn} · End of turn`;
+    if (ph === 'E') return `Turn ${turn} · Game end (not in the log, worked out from the board)`;
+    const nm = card && cards[card] ? ` · ${cards[card][0]}` : '';
+    return `Turn ${turn} · ${ph} AR${ar}${nm}`;
+  };
+  const show = (clientX) => {
+    const box = svg.getBoundingClientRect(), sx = (clientX - box.left) * (W / box.width);
+    const i = Math.max(0, Math.min(n - 1, Math.round(((sx - L) / iw) * (n - 1))));
+    const p = pts[i], v = p[4], c = v > 0 ? 'var(--us)' : v < 0 ? 'var(--ussr)' : '#9aa2b1';
+    guide.setAttribute('x1', x(i)); guide.setAttribute('x2', x(i)); guide.setAttribute('visibility', 'visible');
+    dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(v)); dot.setAttribute('stroke', c); dot.setAttribute('visibility', 'visible');
+    tip.replaceChildren();
+    const a = document.createElement('div'); a.textContent = what(p);
+    const b = document.createElement('div'); const s = document.createElement('span'); s.className = v > 0 ? 'vp-us' : v < 0 ? 'vp-ussr' : ''; s.textContent = tsr.fmtVP(v); b.append('Score: ', s);
+    tip.append(a, b); tip.hidden = false;
+    const k = box.width / W; let left = x(i) * k; const tw = tip.offsetWidth;
+    left = Math.max(tw / 2, Math.min(box.width - tw / 2, left));
+    tip.style.left = left + 'px'; tip.style.top = (y(v) * k) + 'px';
+  };
+  const hide = () => { guide.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); tip.hidden = true; };
+  hit.addEventListener('mousemove', (e) => show(e.clientX));
+  hit.addEventListener('mouseleave', hide);
+  hit.addEventListener('touchstart', (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
+  hit.addEventListener('touchmove', (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
+});

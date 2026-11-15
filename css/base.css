@@ -101,8 +101,8 @@ body.dragging .wrap{outline:3px dashed var(--us-soft);outline-offset:-6px;border
 
 /* --- wide screens: scoreboard across the top, then coup rolls and scoring cards on the left, Ops played on the right --- */
 @media (min-width:1680px){
-  .tsr-body{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);grid-template-areas:"board board" "dice ops" "scor ops";align-items:stretch}
+  .tsr-body{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);grid-template-areas:"board board" "time time" "dice ops" "scor ops";align-items:stretch}
   .tsr-board{grid-area:board}
-  #dice{grid-area:dice} #ops{grid-area:ops} #scorings{grid-area:scor}
+  #dice{grid-area:dice} #ops{grid-area:ops} #scorings{grid-area:scor} #timeline{grid-area:time}
   .tsr-body .tsr-grid{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
 }
