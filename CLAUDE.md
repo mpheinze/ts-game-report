@@ -9,7 +9,7 @@ A static website that turns Playdek Twilight Struggle game logs into an end-of-g
 ## Workflow (agreed with the owner)
 
 1. **Never push to `main` without the owner's approval.** `main` is production.
-2. Make each change on a branch (`feature/<short-name>` or `fix/<short-name>`), commit and push it, and give the owner a pull-request link. `gh` is not authenticated in these sessions, so use `https://github.com/mpheinze/ts-game-report/compare/main...<branch>?expand=1`.
+2. Make each change on a branch (`feature/<short-name>` or `fix/<short-name>`), commit and push it, and open a pull request. `gh auth status` reports a failure in these sessions and `gh pr create` is blocked (it uses GraphQL), but the REST API works: `gh api -X POST repos/mpheinze/ts-game-report/pulls -f base=main -f head=<branch> -f title=… -f body=…`. Merge with `gh api -X PUT repos/mpheinze/ts-game-report/pulls/<n>/merge`, but only after the owner approves.
 3. **Preview:** publish the branch's files as a *private* Claude artifact so the owner can try them before merging. Use the Artifact tool's `publish_files` with `index.html`, `css/*` and `js/*`, each kept at its repo path. Reuse the same preview artifact each time (republish with its slug) and record the slug below.
 4. Merge only when the owner says so. Merge by fast-forwarding `main` or by the owner clicking Merge on GitHub.
 5. Before pushing any CSS or JS change, bump the `?v=` number on **every** `<link>`/`<script>` in `index.html`. GitHub Pages caches pages for about 10 minutes. If the owner still sees an old version, Ctrl+F5 fixes it.
