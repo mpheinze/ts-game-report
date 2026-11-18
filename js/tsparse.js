@@ -184,7 +184,7 @@
       close(); return out;
     }
 
-    let last = null; const timeline = []; let gameTurn = 0;
+    let last = null; const timeline = []; let gameTurn = 0; const grainPlays = [];
     for (const [k, end] of blocks) {
       const h = L[k], body = L.slice(k + 1, end);
       turn = parseInt(/^Turn (\d+), /.exec(h)[1], 10);
@@ -192,6 +192,11 @@
       const MOD = (sd) => (boosted.has(sd) ? 1 : 0) - (redScared.has(sd) ? 1 : 0);
       const info = { turn, header: h, kind: null, side: null, card: null, action: null, lines: body, ar: null };
       const vpBefore = vp;
+      // cards taken from the opponent's hand with Grain Sales To Soviets and played: "US plays X" (printed twice)
+      if (body.some((l) => /^Event: Grain Sales To Soviets/.test(l))) {
+        const seen = new Set();
+        for (const l of body) { const m = /^(US|USSR) plays (.+)$/.exec(l); if (m && !seen.has(l)) { seen.add(l); const cn = cardNo(m[2]); if (cn) grainPlays.push([cn, m[1], turn, 'Grain Sales']); } }
+      }
       const mh = /^Turn \d+, Headline Phase: (.+?) & (.+?)(?:: (.*))?$/.exec(h);
       const mc = /^Turn \d+, Cleanup(?:: (.*))?$/.exec(h);
       const ma = /^Turn \d+, (US|USSR) AR(\d+)(?:: (.+?))?(?:: (.*))?$/.exec(h);
@@ -263,8 +268,11 @@
     }
 
     const scorSeq = { US: [], USSR: [] };
+    const POWER = new Set([36, 47, 57]); // Brush War, Junta, ABM Treaty
+    const power = [];
     for (const p of plays) {
       const c = CARDS[p.card], side = p.side, era = ERA(p.turn);
+      if (POWER.has(p.card)) power.push([p.card, side, p.turn, p.mode === 'headline' ? 'Headline' : p.action === 'via UN Intervention' ? 'UN Intervention' : (usageOf([p.action || ''].concat(p.lines || [])) || (p.mode === 'event' ? 'Event' : 'Ops'))]);
       if (c.scoring) { ops[side][era].scorings += 1; scorSeq[side].push([p.card, p.turn]); continue; }
       let o = c.ops;
       if (p.mod) o = Math.min(4, Math.max(1, o + p.mod));
@@ -277,7 +285,9 @@
       const costly = c.side === OPP[side] && (p.fired || p.mode === 'space');
       ops[side][era][costly ? 'costly' : 'playable'] += o;
       ops[side][era].total += o; ops[side][era].cards += 1;
-    }
+    }    for (const g of grainPlays) if (POWER.has(g[0])) power.push(g);
+    power.sort((a, b) => a[2] - b[2]);
+
 
     // --- ending inference
     let ending = null, winner = null, note = '', finalVp = vp;
@@ -356,7 +366,7 @@
     if (ending === 'V7' && timeline.length) for (const s of timeline[timeline.length - 1][5]) if (s[2]) s[1] = 'Final Scoring';
     for (const e of timeline) for (const s of e[5]) s.length = 2;
     if (finalVp !== vp) timeline.push([gameTurn, 'E', null, null, finalVp, [[finalVp - vp, endSource(note, ending)]]]);
-    return { id: gid, players, clock, turn: last.turn, final_vp: finalVp, ending, ending_name: ENDING_NAME[ending], winner, note, wars, bgflip, dice: dstats, ops, scorSeq, timeline };
+    return { id: gid, players, clock, turn: last.turn, final_vp: finalVp, ending, ending_name: ENDING_NAME[ending], winner, note, wars, bgflip, dice: dstats, ops, scorSeq, timeline, power };
   }
 
   // make_rows.py
@@ -364,7 +374,7 @@
     const me = g.players.US === me_name ? 'US' : 'USSR', opp = me === 'US' ? 'USSR' : 'US';
     const r = { id: g.id, us_player: g.players.US, ussr_player: g.players.USSR, my_side: me, opponent: g.players[opp], turn: g.turn,
       clock_min: g.clock ? parseInt(g.clock, 10) : null, final_vp: g.final_vp, ending_code: g.ending, ending: g.ending_name,
-      vp_timeline: g.timeline, winner: g.winner || 'Draw', result: g.winner === me ? 'Win' : (!g.winner ? 'Draw' : 'Loss'), ending_note: g.note };
+      vp_timeline: g.timeline, power_plays: g.power, winner: g.winner || 'Draw', result: g.winner === me ? 'Win' : (!g.winner ? 'Draw' : 'Loss'), ending_note: g.note };
     for (const s of ['US', 'USSR']) {
       const p = s.toLowerCase();
       for (const [k, v] of Object.entries(g.dice[s])) { r[`${p}_${k}_avg`] = v.avg; r[`${p}_${k}_n`] = v.n; }

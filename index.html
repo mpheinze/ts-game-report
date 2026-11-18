@@ -8,13 +8,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/report.css?v=18">
-<link rel="stylesheet" href="css/base.css?v=18">
-<script defer src="js/reference.js?v=18"></script>
-<script defer src="js/tsparse.js?v=18"></script>
-<script defer src="js/engine.js?v=18"></script>
-<script defer src="js/report.js?v=18"></script>
-<script defer src="js/upload.js?v=18"></script>
+<link rel="stylesheet" href="css/report.css?v=19">
+<link rel="stylesheet" href="css/base.css?v=19">
+<script defer src="js/reference.js?v=19"></script>
+<script defer src="js/tsparse.js?v=19"></script>
+<script defer src="js/engine.js?v=19"></script>
+<script defer src="js/report.js?v=19"></script>
+<script defer src="js/upload.js?v=19"></script>
 </head>
 <body>
 <header class="nav">
@@ -71,6 +71,7 @@
     <div class="tsr-tl" data-draw="timeline"></div>
   </section>
 
+  <div class="col col-l">
   <section class="tsr-sec card" id="dice">
     <h2 class="tsr-h"><span>Coup rolls (average) <button type="button" class="tsr-help" data-help="coups" aria-label="About coup rolls">?</button></span></h2>
     <div class="tsr-grid">
@@ -89,26 +90,6 @@
       <div class="tsr-cell us" data-draw="flips" data-side="us"></div>
       <div class="tsr-mid key">Battleground flips <button type="button" class="tsr-help" data-help="flips" aria-label="About battleground flips">?</button></div>
       <div class="tsr-cell ussr" data-draw="flips" data-side="ussr"></div>
-    </div>
-  </section>
-
-  <section class="tsr-sec card" id="ops">
-    <h2 class="tsr-h"><span>Ops played <button type="button" class="tsr-help" data-help="ops" aria-label="About Ops played and costly Ops">?</button></span></h2>
-    <div class="tsr-grid">
-      <div class="tsr-colh us">US<span class="ic">★</span></div><div></div><div class="tsr-colh ussr"><span class="ic">☭</span>USSR</div>
-      <div class="tsr-cell us tsr-key" data-draw="ops" data-side="us" data-era="game"></div>
-      <div class="tsr-mid key">Whole game</div>
-      <div class="tsr-cell ussr tsr-key" data-draw="ops" data-side="ussr" data-era="game"></div>
-      <div class="tsr-gap"></div>
-      <div class="tsr-cell us" data-draw="ops" data-side="us" data-era="early"></div>
-      <div class="tsr-mid">Early War</div>
-      <div class="tsr-cell ussr" data-draw="ops" data-side="ussr" data-era="early"></div>
-      <div class="tsr-cell us" data-draw="ops" data-side="us" data-era="mid"></div>
-      <div class="tsr-mid">Mid War</div>
-      <div class="tsr-cell ussr" data-draw="ops" data-side="ussr" data-era="mid"></div>
-      <div class="tsr-cell us" data-draw="ops" data-side="us" data-era="late"></div>
-      <div class="tsr-mid">Late War</div>
-      <div class="tsr-cell ussr" data-draw="ops" data-side="ussr" data-era="late"></div>
     </div>
   </section>
 
@@ -131,6 +112,49 @@
       <div class="tsr-cell ussr" data-draw="scor" data-side="ussr" data-era="late"></div>
     </div>
   </section>
+  </div>
+  <div class="col col-r">
+  <section class="tsr-sec card" id="ops">
+    <h2 class="tsr-h"><span>Ops played <button type="button" class="tsr-help" data-help="ops" aria-label="About Ops played and costly Ops">?</button></span></h2>
+    <div class="tsr-grid">
+      <div class="tsr-colh us">US<span class="ic">★</span></div><div></div><div class="tsr-colh ussr"><span class="ic">☭</span>USSR</div>
+      <div class="tsr-cell us tsr-key" data-draw="ops" data-side="us" data-era="game"></div>
+      <div class="tsr-mid key">Whole game</div>
+      <div class="tsr-cell ussr tsr-key" data-draw="ops" data-side="ussr" data-era="game"></div>
+      <div class="tsr-gap"></div>
+      <div class="tsr-cell us" data-draw="ops" data-side="us" data-era="early"></div>
+      <div class="tsr-mid">Early War</div>
+      <div class="tsr-cell ussr" data-draw="ops" data-side="ussr" data-era="early"></div>
+      <div class="tsr-cell us" data-draw="ops" data-side="us" data-era="mid"></div>
+      <div class="tsr-mid">Mid War</div>
+      <div class="tsr-cell ussr" data-draw="ops" data-side="ussr" data-era="mid"></div>
+      <div class="tsr-cell us" data-draw="ops" data-side="us" data-era="late"></div>
+      <div class="tsr-mid">Late War</div>
+      <div class="tsr-cell ussr" data-draw="ops" data-side="ussr" data-era="late"></div>
+    </div>
+  </section>
+
+  <section class="tsr-sec card" id="power">
+    <h2 class="tsr-h"><span>Power cards <button type="button" class="tsr-help" data-help="power" aria-label="About power cards">?</button></span></h2>
+    <div class="tsr-grid">
+      <div class="tsr-colh us">US<span class="ic">★</span></div><div></div><div class="tsr-colh ussr"><span class="ic">☭</span>USSR</div>
+      <div class="tsr-cell us tsr-key" data-draw="power" data-side="us" data-card="all"></div>
+      <div class="tsr-mid key">All three</div>
+      <div class="tsr-cell ussr tsr-key" data-draw="power" data-side="ussr" data-card="all"></div>
+      <div class="tsr-gap"></div>
+      <div class="tsr-cell us" data-draw="power" data-side="us" data-card="36"></div>
+      <div class="tsr-mid">Brush War</div>
+      <div class="tsr-cell ussr" data-draw="power" data-side="ussr" data-card="36"></div>
+      <div class="tsr-cell us" data-draw="power" data-side="us" data-card="57"></div>
+      <div class="tsr-mid">ABM Treaty</div>
+      <div class="tsr-cell ussr" data-draw="power" data-side="ussr" data-card="57"></div>
+      <div class="tsr-cell us" data-draw="power" data-side="us" data-card="47"></div>
+      <div class="tsr-mid">Junta</div>
+      <div class="tsr-cell ussr" data-draw="power" data-side="ussr" data-card="47"></div>
+    </div>
+  </section>
+  </div>
+
   </div>
 </div>
 </main>

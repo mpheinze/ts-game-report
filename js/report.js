@@ -225,6 +225,8 @@ dash.draw('scor', (el) => {
       '<b>/card</b> is the average Ops per card. Early War is turns 1–3, Mid War 4–7, Late War 8–10.'],
     timeline: ['The score after every step of the game: the headlines, each action round and the end of each turn. Above the middle line the US is ahead; below it the USSR is ahead.',
       'Hover over or tap the chart to see the action round, the card played, how many VP changed hands in that step and the score after it. The scale always runs to 20 VP each way; the dashed lines mark 20 VP, which wins the game.'],
+    power: ['<b>Power cards</b>: Brush War, ABM Treaty and Junta. They are cheap to use, can swing a turn, and go back into the deck after use, so the same card can be played several times in a game.',
+      'Each entry shows the turn it was played and how it was used: Headline, Event, Influence, Coup, Realignment, Space Race, or taken from the opponent with Grain Sales or played with UN Intervention. Cards a player held but never played are not in the log.'],
     scor: ['<b>Scoring cards</b> this player played, for the whole game and per era, in the order they were played.',
       'Each card has its own colour. Hover over or tap a card to see which region it scored and in which turn.']
   };
@@ -374,4 +376,23 @@ dash.draw('timeline', (el) => {
   hit.addEventListener('mouseleave', hide);
   hit.addEventListener('touchstart', (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
   hit.addEventListener('touchmove', (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
+});
+
+// ---------- Power cards: who played Brush War, ABM Treaty and Junta, when and how ----------
+dash.draw('power', (el) => {
+  const r = tsr.row(); const s = el.dataset.side, which = el.dataset.card;
+  if (!r) { el.replaceChildren(tsr.span('tsr-n', '—')); return; }
+  if (!Array.isArray(r.power_plays)) { el.replaceChildren(which === 'all' ? tsr.span('tsr-n', 'Add this game\'s log again') : tsr.span('tsr-n', '')); return; }
+  const side = s === 'us' ? 'US' : 'USSR';
+  const plays = r.power_plays.filter((p) => p[1] === side && (which === 'all' || String(p[0]) === which));
+  const box = document.createElement('div'); box.className = 'tsr-pw';
+  const n = tsr.span('', String(plays.length), 0, 0, 'b');
+  if (which === 'all') {
+    box.append(n);
+  } else {
+    const chips = document.createElement('div'); chips.className = 'tsr-chips';
+    for (const [, , turn, how] of plays) chips.append(tsr.span('tsr-chip', `T${turn} · ${how}`));
+    box.append(n, chips);
+  }
+  el.replaceChildren(box);
 });
