@@ -14,7 +14,7 @@ A static website that turns Playdek Twilight Struggle game logs into an end-of-g
 4. Merge only when the owner says so. Merge by fast-forwarding `main` or by the owner clicking Merge on GitHub.
 5. Before pushing any CSS or JS change, bump the `?v=` number on **every** `<link>`/`<script>` in `index.html`. GitHub Pages caches pages for about 10 minutes. If the owner still sees an old version, Ctrl+F5 fixes it.
 
-Preview artifact slug: _(not created yet)_
+Preview artifact slug: `0f846c1c-9282-4892-adcb-64d91dfe80d9` ("TS Game Report – preview", https://claude.ai/artifact/2v8tkuZs9wmUbvbiE9bbyr). Before republishing, call get_artifact (or list_files) for the current base_version.
 
 ## Code layout
 
@@ -49,7 +49,7 @@ Each visitor's games are stored only in their own browser's localStorage, so not
 - A battleground flip is a coup in a battleground the opponent controlled before the coup and the coup-maker controlled after it.
 - Row fields include:
   - per side: `{us,ussr}_{coup_all,coup_bg,coup_nonbg,…}_{avg,n}`, `{p}_bg_flips`, `{p}_wars_won`, `{p}_{early,mid,late,game}_{total,costly,scorings,four,avg_ops}`, `{p}_scoring_seq` ([card, turn]…)
-  - per game: `vp_timeline` ([turn, phase, AR, card, vp, [[delta, source]…], usage]…)
+  - per game: `vp_timeline` ([turn, phase, AR, card, vp, [[delta, source]…], usage]…), `power_plays` ([card, side, turn, how]… for Brush War 36, Junta 47, ABM Treaty 57)
 
 ## Testing before every push
 

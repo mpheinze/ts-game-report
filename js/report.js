@@ -375,3 +375,32 @@ dash.draw('timeline', (el) => {
   hit.addEventListener('touchstart', (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
   hit.addEventListener('touchmove', (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
 });
+
+// ---------- Power cards: who played Brush War, ABM Treaty and Junta, when and how ----------
+dash.draw('power', (el) => {
+  const r = tsr.row(); const s = el.dataset.side, which = el.dataset.card;
+  if (!r) { el.replaceChildren(tsr.span('tsr-n', '—')); return; }
+  if (!Array.isArray(r.power_plays)) { el.replaceChildren(which === 'all' ? tsr.span('tsr-n', 'Add this game\'s log again') : tsr.span('tsr-n', '')); return; }
+  const side = s === 'us' ? 'US' : 'USSR';
+  const plays = r.power_plays.filter((p) => p[1] === side && (which === 'all' || String(p[0]) === which));
+  const box = document.createElement('div'); box.className = 'tsr-pw';
+  const n = tsr.span('', String(plays.length), 0, 0, 'b');
+  if (which === 'all') {
+    box.append(n);
+  } else {
+    const chips = document.createElement('div'); chips.className = 'tsr-chips';
+    for (const [, , turn, how] of plays) chips.append(tsr.span('tsr-chip', `T${turn} · ${how}`));
+    box.append(n, chips);
+  }
+  el.replaceChildren(box);
+});
+
+dash.draw('pcount', (el) => {
+  const r = tsr.row(); const s = el.dataset.side;
+  if (!r || !Array.isArray(r.power_plays)) { el.replaceChildren(tsr.span('tsr-n', '—')); return; }
+  const N = r.power_plays.filter((p) => p[1] === (s === 'us' ? 'US' : 'USSR')).length;
+  const box = document.createElement('div'); box.className = 'tsr-four';
+  box.append(tsr.span('', String(N), 0, 0, 'b'));
+  el.replaceChildren(box);
+  tsr.tip(el, `${r[s + '_player']}: ${N} power card${N === 1 ? '' : 's'} played (Brush War, ABM Treaty, Junta)`);
+});

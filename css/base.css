@@ -59,6 +59,9 @@ body{margin:0;background:var(--page);color:var(--fg);font:15px/1.5 var(--font-an
 .tsr-addmsg{margin:0 0 10px;text-align:center}
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(20,30,50,.04),0 8px 28px rgba(20,30,50,.05)}
 .tsr-body{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+/* the two column wrappers only exist for the wide layout; otherwise their cards sit straight in the page grid */
+.tsr-body .col{display:contents}
+#scoreboard{order:0} #timeline{order:1} #dice{order:2} #ops{order:3} #scorings{order:4} #power{order:5}
 .tsr-board.card{margin-top:0;padding:12px;gap:14px}
 .tsr-sec.card{margin-top:0;padding:12px clamp(16px,2.4vw,32px) 14px}
 .tsr-sec.card .tsr-h{margin-bottom:6px}
@@ -101,8 +104,10 @@ body.dragging .wrap{outline:3px dashed var(--us-soft);outline-offset:-6px;border
 
 /* --- wide screens: scoreboard across the top, then coup rolls and scoring cards on the left, Ops played on the right --- */
 @media (min-width:1680px){
-  .tsr-body{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);grid-template-areas:"board board" "time time" "dice ops" "scor ops";align-items:stretch}
-  .tsr-board{grid-area:board}
-  #dice{grid-area:dice} #ops{grid-area:ops} #scorings{grid-area:scor} #timeline{grid-area:time}
+  .tsr-body{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);grid-template-areas:"board board" "time time" "left right";align-items:stretch}
+  .tsr-board{grid-area:board} #timeline{grid-area:time}
+  .tsr-body .col{display:flex;flex-direction:column;gap:12px}
+  .col-l{grid-area:left} .col-r{grid-area:right}
+  .tsr-body .col > .card:last-child{flex:1}
   .tsr-body .tsr-grid{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
 }

@@ -208,3 +208,15 @@
 .tsr-tl-tip .stock { margin-top: .2em; padding-top: .2em; border-top: 1px solid var(--line); }
 .tsr-tl-tip .vp-us { color: var(--us); font-weight: 600; } .tsr-tl-tip .vp-ussr { color: var(--ussr); font-weight: 600; }
 .tsr-tl-empty { margin: .5em 0; text-align: center; color: var(--muted); font-size: 14px; }
+
+/* Power cards */
+.tsr-pw { display:flex; align-items:center; gap:.6em; flex-wrap:wrap; }
+.tsr-cell.us .tsr-pw { flex-direction: row-reverse; }
+.tsr-pw b { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); min-width: 1ch; text-align:center; }
+.tsr-key .tsr-pw b { font-family: var(--font-anthropic-serif); font-weight:400; font-size: calc(var(--cds-font-size-title) * 1.1); }
+.us .tsr-pw b { color: var(--us); } .ussr .tsr-pw b { color: var(--ussr); }
+.tsr-chips { display:flex; flex-wrap:wrap; gap:4px; }
+.tsr-cell.us .tsr-chips { justify-content:flex-end; }
+.tsr-chip { font-size: 12px; line-height: 1.5; padding: 0 .55em; border-radius: 999px; white-space: nowrap; }
+.us .tsr-chip { background: var(--us-tint); color: #2f5596; border: 1px solid var(--us-soft); }
+.ussr .tsr-chip { background: var(--ussr-tint); color: #9c3229; border: 1px solid var(--ussr-soft); }
