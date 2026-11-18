@@ -394,3 +394,13 @@ dash.draw('power', (el) => {
   }
   el.replaceChildren(box);
 });
+
+dash.draw('pcount', (el) => {
+  const r = tsr.row(); const s = el.dataset.side;
+  if (!r || !Array.isArray(r.power_plays)) { el.replaceChildren(tsr.span('tsr-n', '—')); return; }
+  const N = r.power_plays.filter((p) => p[1] === (s === 'us' ? 'US' : 'USSR')).length;
+  const box = document.createElement('div'); box.className = 'tsr-four';
+  box.append(tsr.span('', String(N), 0, 0, 'b'));
+  el.replaceChildren(box);
+  tsr.tip(el, `${r[s + '_player']}: ${N} power card${N === 1 ? '' : 's'} played (Brush War, ABM Treaty, Junta)`);
+});
